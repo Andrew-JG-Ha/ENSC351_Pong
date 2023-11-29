@@ -13,7 +13,6 @@
 
 #define USER_BUTTON "/sys/class/gpio/gpio72/"
 
-static long long holdDuration = 25; // ms
 static pthread_t userThreadID;
 
 void setup();
@@ -107,14 +106,19 @@ void startReading_User(bool* user_input) {
     if (pthread_create(&userThreadID, NULL, user_thread, user_input)) {
         perror("Error: pthread_create in 'startReading_User' failed. \n");
     }
+    pthread_detach(userThreadID);
 }
 
 void* user_thread(void* user_input) {
     bool* userPressed = (bool*) user_input;
-    char activeState[MAX_LENGTH];
-    readFile(USER_BUTTON, "active_low", activeState);
-    if (awaitChange(USER_BUTTON, "value", holdDuration, -1, activeState, NULL, NULL)) {
-        *userPressed = true;
+    char buffer[MAX_LENGTH];
+    while (true) {
+        sleepForMs(10);
+        readFile(USER_BUTTON, "value", buffer);
+        if ((int) (buffer[0] - '0')) {
+            *userPressed = true;
+            break;
+        }
     }
     pthread_exit(NULL);
 }

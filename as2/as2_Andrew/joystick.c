@@ -10,6 +10,8 @@ Joystick* Joystick_new(char* xPin_file, char* yPin_file) {
     Joystick* newJoystick = malloc(sizeof(Joystick));
     sprintf(newJoystick->xPin, "%s", xPin_file);
     sprintf(newJoystick->yPin, "%s", yPin_file);
+    newJoystick->xReading = A2D_MAX_READING / 2;
+    newJoystick->yReading = A2D_MAX_READING / 2;
     pthread_mutex_init(&newJoystick->mID, NULL);
     return newJoystick;
 }
@@ -17,12 +19,14 @@ Joystick* Joystick_new(char* xPin_file, char* yPin_file) {
 void Joystick_destroy(Joystick* joystick) {
     pthread_mutex_destroy(&joystick->mID);
     free(joystick);
+    joystick = NULL;
 }
 
 void startReading_JS(Joystick* joystick) {
     if (pthread_create(&joystick->tID, NULL, joystickRead_thread, joystick)) {
         perror("Error: pthread_create in 'startReading_JS' failed.\n");
     }
+    pthread_detach(joystick->tID);
 }
 
 void stopReading_JS(Joystick* joystick) {

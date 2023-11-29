@@ -19,7 +19,7 @@ typedef struct LightS {
     long long prevTimestamp;
     double avgReading;
     int readingsIndex;
-    PackageVT readings[MAX_LENGTH * 4];
+    PackageVT readings[MAX_LENGTH * 2];
     pthread_t tID;
     pthread_mutex_t mID;
 } LightS;

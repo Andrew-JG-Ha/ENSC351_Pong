@@ -13,11 +13,21 @@ static void displayStats(PackageStats statsPackage);
 PackageStats* PackageStat_new() {
     PackageStats* newPackageStats = malloc(sizeof(PackageStats));
     newPackageStats->isDipped = false;
+    newPackageStats->avgInterval = 0;
+    newPackageStats->avgReading = 0;
+    newPackageStats->dipThreshold = 0;
+    newPackageStats->maxInterval = 0;
+    newPackageStats->maxReading = 0;
+    newPackageStats->minInterval = 0;
+    newPackageStats->minReading = 0;
+    newPackageStats->numDips = 0;
+    newPackageStats->numReadings = 0;
     return newPackageStats;
 }
 
 void PackageStat_destroy(PackageStats* statsPackage) {
     free(statsPackage);
+    statsPackage = NULL;
 }
 
 Package* Package_new(LightS* sensor, PackageStats* statsPackage) {
@@ -29,6 +39,7 @@ Package* Package_new(LightS* sensor, PackageStats* statsPackage) {
 
 void Package_destroy(Package* package) {
     free(package);
+    package = NULL;
 }
 
 void startAnalysis(Package* package) { // occurs once every second
@@ -36,6 +47,7 @@ void startAnalysis(Package* package) { // occurs once every second
     if (pthread_create(&package->statsPackage->tID, NULL, performCalculations_thread, package)) {
         perror("Error: pthread_create in 'startAnalysis' failed.\n");
     }
+    pthread_detach(package->statsPackage->tID);
 }
 
 void stopAnalysis(Package* package) {

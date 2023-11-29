@@ -22,12 +22,14 @@ static void mapDouble(LedMatrix* object, double value);
 
 static void writeToLedMatrix(LedMatrix* object);
 
-static void digitMap(int value, unsigned char returnBuffer[matrixSize]);
+static void digitMap(int value, unsigned char* returnBuffer);
 
 LedMatrix* LedMatrix_new(char* bus, int config) {
     LedMatrix* newObject = malloc(sizeof(LedMatrix));
     newObject->matrixEncodings = calloc(sizeof(unsigned char), matrixSize);
+    memset(newObject->matrixEncodings, 0, matrixSize);
     newObject->bus = bus;
+    newObject->fileDesc = -1;
     updateConfig(newObject, config);
     return newObject;
 }
@@ -36,6 +38,7 @@ void LedMatrix_destroy(LedMatrix* object) {
     matrixOff(object->bus);
     free(object->matrixEncodings);
     free(object);
+    object = NULL;
 }
 
 void writeD(LedMatrix* object, double value) { 
@@ -116,13 +119,13 @@ static void mapDouble(LedMatrix* object, double value) {
     int temp = value * DECIMAL;
     int digit2 = (int) temp / DECIMAL;
     int digit1 = (int) temp % DECIMAL;
+    digit2 = digit2 % DECIMAL;
     unsigned char digit2_encoding[matrixSize];
     unsigned char digit1_encoding[matrixSize];
     digitMap(digit2, digit2_encoding);
     digitMap(digit1, digit1_encoding);
     for (int i = 0; i < matrixSize; i++) {
-        int temp = encodingBitmask & digit2_encoding[i];
-
+        int temp = encodingBitmask & digit2_encoding[i]; 
         object->matrixEncodings[i] = ((digit2_encoding[i] & ~encodingBitmask) << 5) | temp >> 3 | digit1_encoding[i];
     }
     object->matrixEncodings[0] = object->matrixEncodings[0] | decimalPoint;
@@ -138,7 +141,7 @@ static void writeToLedMatrix(LedMatrix* object) {
     }
 }
 
-static void digitMap(int value, unsigned char returnBuffer[matrixSize]) {
+static void digitMap(int value, unsigned char* returnBuffer) {
     switch (value) {
     case 0: // I2C seems to be shifted over 1 
         returnBuffer[7] = 0x83; // 1000 0011
@@ -240,5 +243,16 @@ static void digitMap(int value, unsigned char returnBuffer[matrixSize]) {
         returnBuffer[1] = 0x83;
         returnBuffer[0] = 0x00; 
         break;
+    default:
+        returnBuffer[7] = 0x00;
+        returnBuffer[6] = 0x00;
+        returnBuffer[5] = 0x00;
+        returnBuffer[4] = 0x00;
+        returnBuffer[3] = 0x00;
+        returnBuffer[2] = 0x00;
+        returnBuffer[1] = 0x00;
+        returnBuffer[0] = 0x00; 
+    break;
     }
+
 }

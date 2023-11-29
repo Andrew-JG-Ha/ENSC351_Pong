@@ -7,6 +7,8 @@ LightS* LightS_new(char* fileDirectory, char* fileName) {
     sprintf(newLightS->fileDir, "%s", fileDirectory);
     sprintf(newLightS->fileName, "%s", fileName);
     newLightS->readingsIndex = 0;
+    newLightS->avgReading = 0;
+    newLightS->prevTimestamp = 0;
     pthread_mutex_init(&newLightS->mID, NULL);
     return newLightS;
 }
@@ -14,6 +16,7 @@ LightS* LightS_new(char* fileDirectory, char* fileName) {
 void LightS_destroy(LightS* sensor) {
     pthread_mutex_destroy(&sensor->mID);
     free(sensor);
+    sensor = NULL;
 }
 
 void startSampling_LS(LightS *sensor) { 
@@ -21,6 +24,7 @@ void startSampling_LS(LightS *sensor) {
     if (pthread_create(&sensor->tID, NULL, sample_thread, sensor)) {
         perror("Error: pthread_create in 'startSampling_LS' failed. \n");
     }
+    pthread_detach(sensor->tID);
 }
 
 void stopSampling_LS(LightS *sensor) {

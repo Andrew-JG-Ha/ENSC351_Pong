@@ -7,19 +7,11 @@
 #define UTILS_H
 
 #include <stdio.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
-#include <sys/epoll.h> 
-#include <unistd.h> 
-#include <fcntl.h> 
-#include <pthread.h>
 
 #define GPIO_FILE_DIR "/sys/class/gpio/"
-
-#define MAX_LENGTH 1024
 
 FILE* openFile(char* fileDirectory, char* operation);
 

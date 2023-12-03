@@ -1,5 +1,12 @@
 #include "utils.h"
+#include <time.h>
+#include <string.h>
+#include <sys/epoll.h> 
+#include <unistd.h> 
+#include <fcntl.h> 
+
 #define MAX_EVENTS 1
+#define MAX_LENGTH 1024
 
 /**
  * Given a file location (fileDirectory), opens and returns the file 

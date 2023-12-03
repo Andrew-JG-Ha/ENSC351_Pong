@@ -16,3 +16,5 @@ typedef struct gameServer {
 
 gameServer* generateGameServer();
 void destroyGameServer(gameServer* gameServer);
+
+#endif

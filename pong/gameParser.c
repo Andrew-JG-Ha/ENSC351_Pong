@@ -53,15 +53,14 @@ static void intArr2Binary_split(int* intArr, int columns, unsigned long* returnA
 }
 
 static void rotateNBits(unsigned char charVal, unsigned char* returnBuffer, int N) { // if N > 0 then left rotate, if N < 0 then right rotate
-    int moddedN = N % __CHAR_BIT__;
+    int moddedN = abs(N % __CHAR_BIT__);
     int bitmask;
-    int temp;
     if (N > 0) { // ROL(N)
         bitmask = (~(-1 << moddedN) << (__CHAR_BIT__ - moddedN)) & charVal;
-        temp = (charVal << moddedN) | (bitmask >> (__CHAR_BIT__ - moddedN));
+        *returnBuffer = (charVal << moddedN) | (bitmask >> (__CHAR_BIT__ - moddedN));
     }
     else { // ROR(N)
         bitmask = ~(-1 << moddedN) & charVal;
-        temp = (charVal >> moddedN) | (bitmask << (__CHAR_BIT__ - moddedN));
+        *returnBuffer = (charVal >> moddedN) | (bitmask << (__CHAR_BIT__ - moddedN));
     }
 }

@@ -4,13 +4,12 @@
 typedef struct GameEncodings {
     unsigned char* playerHalf1;
     unsigned char* playerHalf2;
-    int boardSize;
 } GameEncodings;
 
-GameEncodings* generateGameEncodings(int boardSize);
+GameEncodings* generateGameEncodings();
 
 void destroyGameEncodings(GameEncodings* gameEncodings);
 
-void parseGameState(GameEncodings* gameEncodings, int** board);
+void parseGameState(GameEncodings* gameEncodings, int boardSize, int board[][boardSize]);
 
 #endif

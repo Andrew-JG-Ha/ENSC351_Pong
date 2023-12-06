@@ -64,7 +64,7 @@ void updateGame(gameServer *game) {
                 }
             }
         }
-    } else {
+    } else if (placeholder == NULL) {
         // move down
         for (int i = BOARD_SIZE - 2; i >= 0; i--) {
             if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
@@ -110,6 +110,5 @@ void updateGame(gameServer *game) {
             }
         }
     }
-
 
 }

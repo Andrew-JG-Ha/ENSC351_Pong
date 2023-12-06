@@ -2,7 +2,7 @@
 #define GAME_SERVER
 
 #include <pthread.h>
-#define BOARD_SIZE 8
+#define BOARD_SIZE 16
 #define PADDLE_SIZE 3
 
 /**
@@ -15,6 +15,8 @@ typedef struct gameServer {
     int board[BOARD_SIZE][BOARD_SIZE];
     int scoreLeft;
     int scoreRight;
+    int directionX;
+    int directionY;
 } gameServer;
 
 gameServer* generateGameServer();

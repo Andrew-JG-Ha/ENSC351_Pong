@@ -67,19 +67,43 @@ static void* playerThread(void* playerObj) { // threaded
 }
 
 void destroyPlayer(Player* player) {
+    pthread_mutex_destroy(&player->mId);
+
     turnLedOff(player->buttonLed);
     turnLedOff(player->joyStickLed);
     destroyLed(player->buttonLed);
     free(player->buttonLed);
+    player->buttonLed = NULL;
     destroyLed(player->joyStickLed);
     free(player->joyStickLed);
+    player->joyStickLed = NULL;
     destroyButton(player->profileSwitchButton);
     free(player->profileSwitchButton);
+    player->profileSwitchButton = NULL;
     destroyButton(player->downButton);
     free(player->downButton);
+    player->downButton = NULL;
     destroyButton(player->upButton);
     free(player->upButton);
+    player->upButton = NULL;
+    Joystick_destroy(player->joystick);
+    free(player->joystick);
+    player->joystick = NULL;
     free(player);
+    player = NULL;
+}
+
+void runPlayerClient(Player* player) {
+    if (pthread_create(&player->tId, NULL, playerThread, player)) {
+        perror("ERROR: couldn't initialize player thread");
+    }
+    pthread_detach(player->tId);
+}
+
+void stopPlayerClient(Player* player) {
+    if (pthread_cancel(player->tId)) {
+        perror("ERROR: couldn't stop player thread");
+    }
 }
 
 int main() {

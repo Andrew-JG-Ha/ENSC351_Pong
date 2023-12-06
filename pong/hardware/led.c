@@ -47,28 +47,3 @@ void destroyLed(Led* led) {
     free(led);
     led = NULL;
 }
-/**
-int main() {
-    Led* led = generateLed("p8.16", "gpio46", "46");
-    bool val = false;
-
-    long long startTime = getTimeInMilliS();
-    long long currTime = 0.0;
-    while(true) {
-        sleepForMs(400);
-        
-        if (val) {
-            turnLedOn(led);
-            val = false;
-        } else {
-            turnLedOff(led);
-            val = true;
-        }
-        currTime = getTimeInMilliS();
-        if (currTime - startTime > 10000){
-            exit(1);
-        }
-    }
-}
-**/
-

@@ -6,9 +6,9 @@ Player* generatePlayer(HardwareParams hardwareParams) {
     Player* newPlayer = malloc(sizeof(Player));
     newPlayer->buttonLed = generateLed(hardwareParams.buttonLed);
     newPlayer->joyStickLed = generateLed(hardwareParams.joyStickLed);
-    newPlayer->upButton = generateButton(hardwareParams.upButton);
-    newPlayer->downButton = generateButton(hardwareParams.downButton);
-    newPlayer->profileSwitchButton = generateButton(hardwareParams.profileSwitchButton);
+    newPlayer->upButton = generateButton(hardwareParams.upButton, false);
+    newPlayer->downButton = generateButton(hardwareParams.downButton, false);
+    newPlayer->profileSwitchButton = generateButton(hardwareParams.profileSwitchButton, true);
     newPlayer->joystick = Joystick_new(hardwareParams.joystick.xpin, hardwareParams.joystick.ypin);
     newPlayer->currPlayerDir = 0;
     pthread_mutex_init(&newPlayer->mId, NULL);
@@ -67,19 +67,43 @@ static void* playerThread(void* playerObj) { // threaded
 }
 
 void destroyPlayer(Player* player) {
+    pthread_mutex_destroy(&player->mId);
+
     turnLedOff(player->buttonLed);
     turnLedOff(player->joyStickLed);
     destroyLed(player->buttonLed);
     free(player->buttonLed);
+    player->buttonLed = NULL;
     destroyLed(player->joyStickLed);
     free(player->joyStickLed);
-    destroyButton(player->profileSwitchButton);
+    player->joyStickLed = NULL;
+    destroyButton(player->profileSwitchButton, true);
     free(player->profileSwitchButton);
-    destroyButton(player->downButton);
+    player->profileSwitchButton = NULL;
+    destroyButton(player->downButton, false);
     free(player->downButton);
-    destroyButton(player->upButton);
+    player->downButton = NULL;
+    destroyButton(player->upButton, false);
     free(player->upButton);
+    player->upButton = NULL;
+    Joystick_destroy(player->joystick);
+    free(player->joystick);
+    player->joystick = NULL;
     free(player);
+    player = NULL;
+}
+
+void runPlayerClient(Player* player) {
+    if (pthread_create(&player->tId, NULL, playerThread, player)) {
+        perror("ERROR: couldn't initialize player thread");
+    }
+    pthread_detach(player->tId);
+}
+
+void stopPlayerClient(Player* player) {
+    if (pthread_cancel(player->tId)) {
+        perror("ERROR: couldn't stop player thread");
+    }
 }
 
 int main() {

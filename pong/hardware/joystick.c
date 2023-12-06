@@ -165,25 +165,3 @@ static void decodeDirection(Joystick* joystick, int direction) {
         break;
     }
 }
-
-/**
-int main() {
-    Joystick* joystick = Joystick_new("in_voltage2_raw", "in_voltage3_raw");
-    int direction = 0;
-    long long startTime = getTimeInMilliS();
-    long long currTime = 0.0;
-    while(true) {
-        sleepForMs(100);
-        joystick->xReading = joystickReadX(A2D_FILE_DIR, joystick->xPin);
-        joystick->yReading = joystickReadY(A2D_FILE_DIR, joystick->yPin);
-        direction = encodeDirection(*joystick, direction);
-        decodeDirection(joystick, direction);
-        printf("Current direction: %d\n", joystick->upDownDirection);
-
-        currTime = getTimeInMilliS();
-        if (currTime - startTime > 10000){
-            exit(1);
-        }
-    }
-}
-**/

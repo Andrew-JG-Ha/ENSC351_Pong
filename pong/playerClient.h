@@ -32,7 +32,7 @@ typedef struct Player {
 
 Player* generatePlayer(HardwareParams hardwareParams);
 void destroyPlayer(Player* player);
-void startPlayer(Player* player);
-void stopPlayer(Player* player);
+void runPlayerClient(Player* player);
+void stopPlayerClient(Player* player);
 
 #endif

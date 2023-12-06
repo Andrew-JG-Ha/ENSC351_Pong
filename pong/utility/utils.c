@@ -76,6 +76,25 @@ int readFile(char* fileDirectory, char* fileName, char* buffer) {
     }
 }
 
+/*
+Reads data from a file and stores the value within buff.
+@parameter char* fileName: character pointer to array that stores the file we want to read
+@parameter char* buff: character pointer to array that will store the read value
+@parameter int MAX_LENGTH: The maximum length of the buff array
+returns 1 if file is read correctly, else returns -1
+*/
+int readFromFile(char *fileName, char *buff) {
+    FILE *pFile = fopen(fileName, "r");
+    if (pFile == NULL) {
+        return -1;
+    }
+
+    //Read string (line)
+    fgets(buff, MAX_LENGTH, pFile);
+    fclose(pFile);
+    return 1;
+}
+
 /**
  * Runs a linux command given in 'command'
 */
@@ -202,12 +221,54 @@ void configureGPIO(char* gpioPinNumber, char* edgeType) {
         strncat(command, " > ", 10);
         strncat(dest, gpioPinNumber,36);
         strncat(dest, "/edge", 30);
-        int res = readFromFile(dest, buff, 32);
+        int res = readFromFile(dest, buff);
         if (res == -1) {
             runCommand(setup);
         }
         runCommand(strncat(command, dest, 60));
     }
+}
+
+/**
+ * Given a fileDirectory and a fileName, creates an epoll instance to watch the file, edgeTrigger will wait until the event described in
+ * the GPIO's edge folder occurs or until the timeout duration has elasped before returning to the main program. This function calls 'func'
+ * whenever the edge is detected - NULL may be entered into func, if nothing is to be called
+*/
+int edgeTrigger(char* fileDirectory, char* fileName, long long timeout, void (*func)(void)) {
+    char fullFileDir[MAX_LENGTH];
+    struct epoll_event event;
+    int epollFD = epoll_create1(0);
+    if (epollFD == -1) {
+        printf("ERROR: failed to create an epoll file descriptor\n");
+        return(-1);
+    }
+    sprintf(fullFileDir, "%s%s", fileDirectory, fileName);
+    int fd = open(fullFileDir, O_RDONLY);
+    if (fd == -1) {
+        printf("ERROR: failed to open() file (%s) for read access\n", fullFileDir);
+        return(-1);
+    }
+    event.events = EPOLLET;
+    event.data.fd = fd;
+    if (epoll_ctl(epollFD, EPOLL_CTL_ADD, fd, &event) == -1) {
+        printf("ERROR: failed to add control epoll_ctl() on file descriptor (%d)\n", fd);
+        return(-1);
+    }
+    for (int i = 0; i < 2; i++) {
+        int waitRes = epoll_wait(epollFD, &event, MAX_EVENTS, timeout);
+        if (func != NULL) {
+            func();
+        }
+        if (waitRes == -1) {
+            printf("ERROR: epoll_wait() failed (%d)\n", waitRes);
+            close(fd);
+            close(epollFD);
+            return(-1);
+        }
+    }
+    close(fd);
+    close(epollFD);
+    return(1);
 }
 
 /**

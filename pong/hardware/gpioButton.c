@@ -9,12 +9,15 @@
 
 void initButtonPin(GpioButton* button, char* pin, char* pinNumber);
 
-GpioButton* generateButton(ButtonHardware buttonHardware) {
+GpioButton* generateButton(ButtonHardware buttonHardware, bool threaded) {
     GpioButton* newButton = malloc(sizeof(GpioButton));
     newButton->val = 0;
     newButton->filePath = calloc(MAX_LEN, sizeof(char));
     sprintf(newButton->filePath, "%s%s/", BUT_PATH, buttonHardware.gpioPin);
     initButtonPin(newButton, buttonHardware.pin, buttonHardware.pinNumber);
+    if (threaded) {
+        pthread_mutex_init(&newButton->mId, NULL);
+    }
     return newButton;
 }
 
@@ -39,9 +42,34 @@ int readButton(GpioButton* button) {
     return retVal;
 }
 
-void destroyButton(GpioButton* button) {
+void destroyButton(GpioButton* button, bool threaded) {
+    if (threaded) {
+        pthread_mutex_destroy(&button->mId);
+    }
     free(button->filePath);
     button->filePath = NULL;
     free(button);
     button = NULL;
+    
+}
+
+static void* buttonThread(GpioButton* button) {
+    while (true) {
+        pthread_mutex_lock(&button->mId);
+        button->val = readButton(button);
+    }
+    return NULL;
+}
+
+void runButtonThread(GpioButton* button) {
+    if (pthread_create(&button->tId, NULL, buttonThread, button)) {
+        perror("ERROR: couldn't initialize button thread");
+    }
+    pthread_detach(button->tId);
+}
+
+void stopButtonThread(GpioButton* button) {
+    if (pthread_cancel(button->tId)) {
+        perror("ERROR: couldn't stop button thread");
+    }
 }

@@ -1,6 +1,7 @@
 #include "joystick.h"
 #include "../utility/a2d_utils.h"
 #include <pthread.h>
+#include <math.h>
 
 #define MAX_LENGTH 1024
 
@@ -32,10 +33,12 @@ Joystick* Joystick_new(char* xPin_file, char* yPin_file) {
 
 void Joystick_destroy(Joystick* joystick) {
     pthread_mutex_destroy(&joystick->mID);
+    /**
     for (int i = 0; i < MAX_LENGTH; i++) {
         joystick->xPin[i] = NULL;
         joystick->yPin[i] = NULL;
     }
+    **/
     free(joystick->xPin);
     free(joystick->yPin);
     joystick->xPin = NULL;
@@ -55,6 +58,15 @@ void stopReading_JS(Joystick* joystick) {
     if (pthread_cancel(joystick->tID)) {
         perror("Error: pthread_cancel in 'stopReading_JS' failed.\n");
     }
+}
+
+int getUpDownDirection(Joystick* joystick) {
+    int direction = 0;
+    joystick->xReading = joystickReadX(A2D_FILE_DIR, joystick->xPin);
+    joystick->yReading = joystickReadY(A2D_FILE_DIR, joystick->yPin);
+    direction = encodeDirection(*joystick, direction);
+    decodeDirection(joystick, direction);
+    return joystick->upDownDirection;
 }
 
 static void* joystickRead_thread(void* joystickObject) { // constantly running and getting data
@@ -83,6 +95,8 @@ static int joystickReadY(char* fileDirectory, char* yPin) {
     return yVal;
 }
 
+
+
 static int normalizeAroundZero(int value) {
     int result = (value - A2D_MAX_READING / 2);
     return result;
@@ -96,8 +110,8 @@ static int encodeDirection(Joystick joystick, int previousDescision) {
      * 3 = joystick left (min interval between samples) +Y, X don't care
      * 4 = joystick right (max interval between samples) -Y, X don't care
     */
-    int middleValue = A2D_MAX_READING / 2;
-    int joystickThreshold = middleValue * 0.5;
+    //int middleValue = A2D_MAX_READING / 2;
+    int joystickThreshold = 300;
     int mappedX = normalizeAroundZero(joystick.xReading);
     int mappedY = normalizeAroundZero(joystick.yReading);
     // x == y is along the diagonal
@@ -151,3 +165,25 @@ static void decodeDirection(Joystick* joystick, int direction) {
         break;
     }
 }
+
+/**
+int main() {
+    Joystick* joystick = Joystick_new("in_voltage2_raw", "in_voltage3_raw");
+    int direction = 0;
+    long long startTime = getTimeInMilliS();
+    long long currTime = 0.0;
+    while(true) {
+        sleepForMs(100);
+        joystick->xReading = joystickReadX(A2D_FILE_DIR, joystick->xPin);
+        joystick->yReading = joystickReadY(A2D_FILE_DIR, joystick->yPin);
+        direction = encodeDirection(*joystick, direction);
+        decodeDirection(joystick, direction);
+        printf("Current direction: %d\n", joystick->upDownDirection);
+
+        currTime = getTimeInMilliS();
+        if (currTime - startTime > 10000){
+            exit(1);
+        }
+    }
+}
+**/

@@ -1,13 +1,22 @@
 #ifndef GPIO_BUTTON_H
 #define GPIO_BUTTON_H
 
-#define MAX_LEN 64
+typedef struct ButtonHardware {
+    char* pin;
+    char* gpioPin;
+    char* pinNumber;
+} ButtonHardware;
 
 typedef struct GpioButton {
-    char pin[64];
+    char* filePath;
+    int val;        // for thread-use
 } GpioButton;
 
-static int readButton(GpioButton gpioButton);
+int readButton(GpioButton *button);
 
-GpioButton generateButton(char* pin);
+GpioButton* generateButton(ButtonHardware buttonHardware);
+
+void destroyButton(GpioButton* button);
+
+#endif
 

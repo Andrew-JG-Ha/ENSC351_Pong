@@ -5,7 +5,7 @@
 #include <unistd.h> 
 #include <fcntl.h> 
 
-#define MAX_EVENTS 1
+#define MAX_EVENTS 2
 #define MAX_LENGTH 1024
 
 /**
@@ -138,46 +138,76 @@ long long getTimeInNanoS(void) {
     return nanoSeconds;
 }
 
-/**
- * Given a fileDirectory and a fileName, creates an epoll instance to watch the file, edgeTrigger will wait until the event described in
- * the GPIO's edge folder occurs or until the timeout duration has elasped before returning to the main program. This function calls 'func'
- * whenever the edge is detected - NULL may be entered into func, if nothing is to be called
+/*
+Waits for timeInMs milliseconds for a change in value in path. If there is a change in value then the function returns early.
+Requires that the pin has it's edge set to the intended edge setting. Do not use if edge is set to 'none'.
+@parameter char* path: path to the value you want to check the edge of
+@parameter long long int timeInMs: maximum time to wait for a change in value, value is represented in milliseconds
 */
-int edgeTrigger(char* fileDirectory, char* fileName, long long timeout, void (*func)(void)) {
-    char fullFileDir[MAX_LENGTH];
+int waitForEdge(char* path, long long int timeInMs) {
     struct epoll_event event;
-    int epollFD = epoll_create1(0);
-    if (epollFD == -1) {
-        printf("ERROR: failed to create an epoll file descriptor\n");
-        return(-1);
+    memset(&event, 0, sizeof(event));
+    int nfds, fd, n;
+    int epollFileDescriptor = epoll_create1(0);
+    
+    if (epollFileDescriptor == -1) {
+        perror("epoll_create1 failed.");
+        exit(EXIT_FAILURE);
     }
-    sprintf(fullFileDir, "%s%s", fileDirectory, fileName);
-    int fd = open(fullFileDir, O_RDONLY);
+
+    fd = open(path, O_RDONLY);
     if (fd == -1) {
-        printf("ERROR: failed to open() file (%s) for read access\n", fullFileDir);
-        return(-1);
+        perror("opening of file path failed.");
+        close(epollFileDescriptor);
+        exit(EXIT_FAILURE);
     }
+
     event.events = EPOLLET;
-    event.data.fd = fd;
-    if (epoll_ctl(epollFD, EPOLL_CTL_ADD, fd, &event) == -1) {
-        printf("ERROR: failed to add control epoll_ctl() on file descriptor (%d)\n", fd);
-        return(-1);
+
+    if (epoll_ctl(epollFileDescriptor, EPOLL_CTL_ADD, fd, &event) == -1) {
+        perror("epoll_ctl failed.");
+        close(epollFileDescriptor);
+        close(fd);
+        exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < 2; i++) {
-        int waitRes = epoll_wait(epollFD, &event, MAX_EVENTS, timeout);
-        if (func != NULL) {
-            func();
-        }
-        if (waitRes == -1) {
-            printf("ERROR: epoll_wait() failed (%d)\n", waitRes);
+
+    for (n = 0; n < MAX_EVENTS; ++n) {
+        nfds = epoll_wait(epollFileDescriptor, &event, MAX_EVENTS, timeInMs);
+
+        if (nfds == -1) {
+            perror("epoll_wait.");
+            close(epollFileDescriptor);
             close(fd);
-            close(epollFD);
-            return(-1);
+            exit(EXIT_FAILURE);
         }
     }
+    close(epollFileDescriptor);
     close(fd);
-    close(epollFD);
-    return(1);
+    return 1;
+}
+
+void configureGPIO(char* gpioPinNumber, char* edgeType) {
+    if (strcmp(edgeType, "rising") & strcmp(edgeType, "falling") & strcmp(edgeType, "both") & strcmp(edgeType, "none")) {
+        perror("Invalid Edge Type entered.\n");
+        exit(EXIT_FAILURE);
+    }
+    else {
+        char dest[50] = "/sys/class/gpio/gpio";
+        char setup[60] = "echo ";
+        char buff[32];
+        char command[128] = "echo ";
+        strncat(setup, gpioPinNumber, 4);
+        strncat(setup, " > /sys/class/gpio/export", 26);
+        strncat(command, edgeType, 10);
+        strncat(command, " > ", 10);
+        strncat(dest, gpioPinNumber,36);
+        strncat(dest, "/edge", 30);
+        int res = readFromFile(dest, buff, 32);
+        if (res == -1) {
+            runCommand(setup);
+        }
+        runCommand(strncat(command, dest, 60));
+    }
 }
 
 /**

@@ -17,7 +17,7 @@ static int encodeDirection(Joystick joystick, int previousDescision);
 
 static void decodeDirection(Joystick* joystick, int direction);
 
-Joystick* Joystick_new(char* xPin_file, char* yPin_file) {
+Joystick* generateJoystick(char* xPin_file, char* yPin_file) {
     Joystick* newJoystick = malloc(sizeof(Joystick));
     newJoystick->xPin = calloc(sizeof(char), MAX_LENGTH);
     newJoystick->yPin = calloc(sizeof(char), MAX_LENGTH);
@@ -31,7 +31,7 @@ Joystick* Joystick_new(char* xPin_file, char* yPin_file) {
     return newJoystick;
 }
 
-void Joystick_destroy(Joystick* joystick) {
+void destroyJoystick(Joystick* joystick) {
     pthread_mutex_destroy(&joystick->mID);
     /**
     for (int i = 0; i < MAX_LENGTH; i++) {

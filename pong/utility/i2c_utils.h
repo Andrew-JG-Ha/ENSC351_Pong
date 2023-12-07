@@ -22,7 +22,7 @@ int configPins(char* bus);
 // I2C writing to and reading from registers 
 int initBus(char* bus, int address);
 
-void writeToRegI2C(int i2cFileDesc, unsigned char regAddr, unsigned char* valueArr, int numberOfElements);
+void writeI2CReg(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress);
 
 unsigned char readRegI2C(int i2cFileDesc, unsigned char regAddr);
 

@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 #include "hardware/lcd.h"
+#include "playerClient.h"
 
 #define BOARD_SIZE 16
 #define PADDLE_SIZE 3
@@ -24,6 +25,8 @@ typedef struct gameServer {
     int scoreRight;
     int directionX;
     int directionY;
+    Player* player1;
+    Player* player2;
 } gameServer;
 
 gameServer* generateGameServer();

@@ -1,17 +1,48 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "gameServer.h"
 #include "gameLogic.h"
 #include "gameParser.h"
 #include "gameWrite.h"
+#include "hardware/lcd.h"
 
 #define EMPTY 0
 #define PADDLE_BALL 1
 
+gameServer* generateGameServer(Player* player1, Player* player2) {
+    gameServer* newGame = (gameServer*)malloc(sizeof(gameServer));
+    memset(newGame -> board, 0, sizeof(newGame->board));
+    newGame->scoreLeft = 0;
+    newGame->scoreRight = 0;
+    newGame->directionX = 0;
+    newGame->directionY = 0;
+    newGame->player1 = player1;
+    newGame->player2 = player2;
+}
+
+void destroyGameServer(gameServer* gameServer) {
+    free(gameServer);
+}
+
+void runServer() {
+    gameServer* game;
+    initializeGame(game);
+
+    /*while (1) {
+        updateGame(game);
+        sleepForMS(10000);
+    }*/
+}
+
 // initialize game, paddles/ball represented by 1
 void initializeGame(gameServer *game) {
+    LcdScreen* newLcd = generateLcd(LH, 4);
+    writeMessageToLcd(newLcd, "BO5, GO!");
+    writeCharToLcd(newLcd, "0 - 0");
+    destroyLcd(newLcd);
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             game->board[i][j] = EMPTY;
@@ -29,9 +60,6 @@ void initializeGame(gameServer *game) {
 
     game->directionX = 1;
     game->directionY = 1;
-
-    game->scoreLeft = 0;
-    game->scoreRight = 0;
 }
 
 void updateGame(gameServer *game) {
@@ -142,7 +170,7 @@ void updateGame(gameServer *game) {
                     }
 
                     if (game->scoreLeft == 3) {
-                        // left win
+                        
                     } else if (game->scoreRight == 3) {
                         // right win
                     } else {

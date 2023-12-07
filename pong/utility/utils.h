@@ -7,25 +7,22 @@
 #define UTILS_H
 
 #include <stdio.h>
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
-#include <sys/epoll.h> 
-#include <unistd.h> 
-#include <fcntl.h> 
-#include <pthread.h>
 
 #define GPIO_FILE_DIR "/sys/class/gpio/"
-
-#define MAX_LENGTH 1024
 
 FILE* openFile(char* fileDirectory, char* operation);
 
 int writeToFile(char* fileDirectory, char* fileName, char* toFile);
 
 int readFile(char* fileDirectory, char* fileName, char* buffer);
+
+int readFromFile(char *fileName, char *buff);
+
+int waitForEdge(char* path, long long int timeInMs);
+
+void configureGPIO(char* gpioPinNumber, char* edgeType);
 
 int edgeTrigger(char* fileDirectory, char* fileName, long long timeout, void (*func)(void));
 

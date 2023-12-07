@@ -5,7 +5,7 @@
 #include <unistd.h> 
 #include <fcntl.h> 
 
-#define MAX_EVENTS 1
+#define MAX_EVENTS 2
 #define MAX_LENGTH 1024
 
 /**
@@ -76,6 +76,25 @@ int readFile(char* fileDirectory, char* fileName, char* buffer) {
     }
 }
 
+/*
+Reads data from a file and stores the value within buff.
+@parameter char* fileName: character pointer to array that stores the file we want to read
+@parameter char* buff: character pointer to array that will store the read value
+@parameter int MAX_LENGTH: The maximum length of the buff array
+returns 1 if file is read correctly, else returns -1
+*/
+int readFromFile(char *fileName, char *buff) {
+    FILE *pFile = fopen(fileName, "r");
+    if (pFile == NULL) {
+        return -1;
+    }
+
+    //Read string (line)
+    fgets(buff, MAX_LENGTH, pFile);
+    fclose(pFile);
+    return 1;
+}
+
 /**
  * Runs a linux command given in 'command'
 */
@@ -138,6 +157,78 @@ long long getTimeInNanoS(void) {
     return nanoSeconds;
 }
 
+/*
+Waits for timeInMs milliseconds for a change in value in path. If there is a change in value then the function returns early.
+Requires that the pin has it's edge set to the intended edge setting. Do not use if edge is set to 'none'.
+@parameter char* path: path to the value you want to check the edge of
+@parameter long long int timeInMs: maximum time to wait for a change in value, value is represented in milliseconds
+*/
+int waitForEdge(char* path, long long int timeInMs) {
+    struct epoll_event event;
+    memset(&event, 0, sizeof(event));
+    int nfds = 0, fd = 0, n = 0;
+    int epollFileDescriptor = epoll_create1(0);
+    
+    if (epollFileDescriptor == -1) {
+        perror("epoll_create1 failed.");
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        perror("opening of file path failed.");
+        close(epollFileDescriptor);
+        exit(EXIT_FAILURE);
+    }
+
+    event.events = EPOLLET;
+
+    if (epoll_ctl(epollFileDescriptor, EPOLL_CTL_ADD, fd, &event) == -1) {
+        perror("epoll_ctl failed.");
+        close(epollFileDescriptor);
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
+    for (n = 0; n < MAX_EVENTS; ++n) {
+        nfds = epoll_wait(epollFileDescriptor, &event, MAX_EVENTS, timeInMs);
+        if (nfds == -1) {
+            perror("epoll_wait.");
+            close(epollFileDescriptor);
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+    }
+    printf("Button pressed\n");
+    close(epollFileDescriptor);
+    close(fd);
+    return 1;
+}
+
+void configureGPIO(char* gpioPinNumber, char* edgeType) {
+    if (strcmp(edgeType, "rising") & strcmp(edgeType, "falling") & strcmp(edgeType, "both") & strcmp(edgeType, "none")) {
+        perror("Invalid Edge Type entered.\n");
+        exit(EXIT_FAILURE);
+    }
+    else {
+        char dest[50] = "/sys/class/gpio/gpio";
+        char setup[60] = "echo ";
+        char buff[32];
+        char command[128] = "echo ";
+        strncat(setup, gpioPinNumber, 4);
+        strncat(setup, " > /sys/class/gpio/export", 26);
+        strncat(command, edgeType, 10);
+        strncat(command, " > ", 10);
+        strncat(dest, gpioPinNumber,36);
+        strncat(dest, "/edge", 30);
+        int res = readFromFile(dest, buff);
+        if (res == -1) {
+            runCommand(setup);
+        }
+        runCommand(strncat(command, dest, 60));
+    }
+}
+
 /**
  * Given a fileDirectory and a fileName, creates an epoll instance to watch the file, edgeTrigger will wait until the event described in
  * the GPIO's edge folder occurs or until the timeout duration has elasped before returning to the main program. This function calls 'func'
@@ -187,7 +278,7 @@ int edgeTrigger(char* fileDirectory, char* fileName, long long timeout, void (*f
 int awaitChange(char* fileDirectory, char* fileName, long long minimumTime, long long timeout, char* activeState, void (*funcEdge)(void), void (*funcHold)(void)) {
     char currentVal[MAX_LENGTH];
     strcpy(currentVal, activeState);
-    edgeTrigger(fileDirectory, fileName, timeout, funcEdge);
+    waitForEdge(fileDirectory, timeout);
     long long startTime =  getTimeInMilliS();
     long long currentTime = startTime;
     readFile(fileDirectory, fileName, currentVal);

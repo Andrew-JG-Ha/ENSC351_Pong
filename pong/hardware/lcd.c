@@ -20,13 +20,15 @@ LcdScreen* generateLcd(LcdHardware lcdHardware, int numDataPins) {
     newLcdScreen->rsPinFilePath = calloc(1, sizeof(char) * MAX_LEN);
     sprintf(newLcdScreen->ePinFilePath, "%s%s/", GPIO_FILE_DIR, lcdHardware.ePin.gpioPin);
     initPin(newLcdScreen->ePinFilePath, lcdHardware.ePin.pin, lcdHardware.ePin.pinNumber);
-    sprintf(newLcdScreen->rsPinFilePath, "%s%s/", GPIO_FILE_DIR, lcdHardware.rsPin.gpioPin);
-    initPin(newLcdScreen->rsPinFilePath, lcdHardware.rsPin.pin, lcdHardware.rsPin.pinNumber);
+    
     for (int i = 0; i < numDataPins; i++) {
         newLcdScreen->dataPinsFilePaths[i] = calloc(1, sizeof(char)*MAX_LEN);
         sprintf(newLcdScreen->dataPinsFilePaths[i], "%s%s/", GPIO_FILE_DIR, lcdHardware.dataPins[i].gpioPin);
         initPin(newLcdScreen->dataPinsFilePaths[i], lcdHardware.dataPins[i].pin, lcdHardware.dataPins[i].pinNumber);
     }
+
+    sprintf(newLcdScreen->rsPinFilePath, "%s%s/", GPIO_FILE_DIR, lcdHardware.rsPin.gpioPin);
+    initPin(newLcdScreen->rsPinFilePath, lcdHardware.rsPin.pin, lcdHardware.rsPin.pinNumber);
     
     /**
      * The following segment of code is adapted from 
@@ -76,7 +78,7 @@ LcdScreen* generateLcd(LcdHardware lcdHardware, int numDataPins) {
 	write4BitsToLcd(newLcdScreen, 0xF); /* 1111 */
 	sleepForNs(64000); // 64 us
 
-    writeToFile(newLcdScreen->rsPinFilePath, NULL, "1");
+    writeToFile(newLcdScreen->rsPinFilePath, VALUE_FILE, "1");
 
     return newLcdScreen;
 }
@@ -97,6 +99,7 @@ void destroyLcd(LcdScreen* screen) {
 }
 
 void writeMessageToLcd(LcdScreen* screen, char* text) {
+    printf("Writing \"%s\" to LCD...\n", text);
     for (int i = 0; i < strlen(text); i++) {
         writeCharToLcd(screen, text[i]);
     }
@@ -104,7 +107,7 @@ void writeMessageToLcd(LcdScreen* screen, char* text) {
 
 void writeCharToLcd(LcdScreen* screen, char character) {
     unsigned int upperBits = (character >> 4);
-    unsigned int lowerBits = (character & 0b1111);
+    unsigned int lowerBits = (character & 0xF);
     write4BitsToLcd(screen, upperBits);
     write4BitsToLcd(screen, lowerBits);
 }
@@ -113,8 +116,8 @@ static void write4BitsToLcd(LcdScreen* screen, __uint8_t value) {
     char bits[2];
     bits[1] = '\0';
     for (int i = 0; i < screen->numDataPins; i++) {
-        bits[0] = (((value >> i) & 0x01) ? 1 : 0) + '0';
-        writeToFile(screen->dataPinsFilePaths[i], NULL, bits);
+        bits[0] = ((value >> i) & 0x01 ? 1 : 0) + '0';
+        writeToFile(screen->dataPinsFilePaths[i], VALUE_FILE, bits);
     }
     enableWrite(*screen);
 }
@@ -130,15 +133,15 @@ static void initPin(char* fileDir, char* pin, char* pinNumber) {
         writeToFile(GPIO_FILE_DIR, "export", pinNumber);
     }
     writeToFile(fileDir, "direction", "out");
-    writeToFile(fileDir, "active_low", "0");
+    //writeToFile(fileDir, "active_low", "0");
     writeToFile(fileDir, VALUE_FILE, "0");
 }
 
 static void enableWrite(LcdScreen screen) {
-    writeToFile(screen.ePinFilePath, NULL, "1");
-    sleepForMs(1);
-    writeToFile(screen.ePinFilePath, NULL, "0");
-    sleepForMs(1);
+    writeToFile(screen.ePinFilePath, VALUE_FILE, "1");
+    sleepForMs(10);
+    writeToFile(screen.ePinFilePath, VALUE_FILE, "0");
+    sleepForMs(10);
 }
 
 int main() {
@@ -148,37 +151,37 @@ int main() {
     Pin ePin;
     Pin rsPin;
 
-    dataPins[0].pin = "p8.7";
-    dataPins[0].gpioPin = "gpio66";
-    dataPins[0].pinNumber = "66";
+    dataPins[0].pin = "p8.27";
+    dataPins[0].gpioPin = "gpio86";
+    dataPins[0].pinNumber = "86";
 
-    dataPins[1].pin = "p8.9";
-    dataPins[1].gpioPin = "gpio69";
-    dataPins[1].pinNumber = "69";
+    dataPins[1].pin = "p8.28";
+    dataPins[1].gpioPin = "gpio88";
+    dataPins[1].pinNumber = "88";
 
-    dataPins[2].pin = "p9.27";
-    dataPins[2].gpioPin = "gpio115";
-    dataPins[2].pinNumber = "115";
+    dataPins[2].pin = "p8.29";
+    dataPins[2].gpioPin = "gpio87";
+    dataPins[2].pinNumber = "87";
 
-    dataPins[3].pin = "p9.15";
-    dataPins[3].gpioPin = "gpio48";
-    dataPins[3].pinNumber = "48";
+    dataPins[3].pin = "p8.30";
+    dataPins[3].gpioPin = "gpio89";
+    dataPins[3].pinNumber = "89";
 
     LH.dataPins = dataPins;
 
-    ePin.pin = "p8.8";
-    ePin.gpioPin = "gpio67";
-    ePin.pinNumber = "67";
+    ePin.pin = "p8.31";
+    ePin.gpioPin = "gpio10";
+    ePin.pinNumber = "10";
 
-    rsPin.pin = "p8.10";
-    rsPin.gpioPin = "gpio68";
-    rsPin.pinNumber = "68";
+    rsPin.pin = "p8.32";
+    rsPin.gpioPin = "gpio11";
+    rsPin.pinNumber = "11";
 
     LH.ePin = ePin;
     LH.rsPin = rsPin;
 
     LcdScreen* newLcd = generateLcd(LH, 4);
-    writeMessageToLcd(newLcd, "hello world!");
-    sleepForMs(10000);
+    writeMessageToLcd(newLcd, "test");
+    sleepForMs(100);
     destroyLcd(newLcd);
 }

@@ -20,6 +20,8 @@
 #define A2D_VOLTAGE_REF 1.8
 #define A2D_MAX_READING 4095
 
+#define MAX_LENGTH 1024
+
 int getRawReadings(char* fileDirectory, char* fileName);
 
 double getConvertedReadings(char* fileDirectory, char* fileName);

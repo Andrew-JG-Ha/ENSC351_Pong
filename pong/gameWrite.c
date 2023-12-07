@@ -15,5 +15,18 @@ void writeData(int i2cFileDesc, int boardSize, MatrixHardware* mat, GameEncoding
             writeToRegI2C(i2cFileDesc, mat->Matrix3, encodings->playerHalf2[i], BYTES_TO_WRITE);
         }
     }
+}
 
+MatrixHardware* generate_Matrix(unsigned char m1, unsigned char m2, unsigned char m3, unsigned char m4) {
+    MatrixHardware* newMatrix = calloc(sizeof(MatrixHardware));
+    newMatrix->Matrix1 = m1;
+    newMatrix->Matrix1 = m2;
+    newMatrix->Matrix1 = m3;
+    newMatrix->Matrix1 = m4;
+    return newMatrix;
+}
+
+void destroy_Matrix(MatrixHardware* m) {
+    free(m);
+    m = NULL;
 }

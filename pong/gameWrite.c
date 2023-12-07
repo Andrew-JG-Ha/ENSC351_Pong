@@ -9,12 +9,12 @@ void writeData(int i2cFileDesc, int boardSize, GameEncodings* encodings) {
         //Write to MATRIX1
         //Write to MATRIX2
         writeToRegI2C(i2cFileDesc, MATRIX1, encodings.playerHalf1, BITS_TO_WRITE);
-        writeToRegI2C(i2cFileDesc, MATRIX2, encodings.playerHalf2, BITS_TO_WRITE);
+        writeToRegI2C(i2cFileDesc, MATRIX3, encodings.playerHalf2, BITS_TO_WRITE);
     }
     for (int i = boardSize/2; i < boardSize; i++) {
         //Write to MATRIX3
         //Write to MATRIX4
-        writeToRegI2C(i2cFileDesc, MATRIX3, encodings.playerHalf1,BITS_TO_WRITE);
+        writeToRegI2C(i2cFileDesc, MATRIX2, encodings.playerHalf1,BITS_TO_WRITE);
         writeToRegI2C(i2cFileDesc, MATRIX4, encodings.playerHalf2,BITS_TO_WRITE);
     }
 }

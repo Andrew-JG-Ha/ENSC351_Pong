@@ -2,6 +2,8 @@
 #define GAME_SERVER
 
 #include <pthread.h>
+#include "hardware/lcd.h"
+
 #define BOARD_SIZE 16
 #define PADDLE_SIZE 3
 
@@ -9,6 +11,11 @@
  * Game server would read the playerClient desired move ie up/down/nothing and update game state
  * and update the display
 */
+typedef struct outputHardware {
+    LcdHardware ledScreen;
+    MatrixHardware matrix;
+} outputHardware;
+
 
 typedef struct gameServer {
     pthread_t pId;

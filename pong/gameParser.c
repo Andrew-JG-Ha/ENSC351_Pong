@@ -39,8 +39,8 @@ void parseGameState(GameEncodings* gameEncodings, int boardSize, int board[][boa
         }
 
         intArr2Binary_split(board[row], boardSize, &gameEncodings->playerHalf1[positionInPH], &gameEncodings->playerHalf2[positionInPH]);
-        rotateNBits(gameEncodings->playerHalf1[positionInPH], &gameEncodings->playerHalf1[positionInPH], -1);
-        rotateNBits(gameEncodings->playerHalf2[positionInPH], &gameEncodings->playerHalf2[positionInPH], -1);
+        rotateNBits(gameEncodings->playerHalf1[positionInPH], &gameEncodings->playerHalf1[positionInPH], 1);
+        rotateNBits(gameEncodings->playerHalf2[positionInPH], &gameEncodings->playerHalf2[positionInPH], 1);
         positionInPH = positionInPH + 2;
     }
 }

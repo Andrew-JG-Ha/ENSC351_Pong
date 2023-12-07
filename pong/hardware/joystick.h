@@ -17,9 +17,9 @@ typedef struct Joystick {
     pthread_t tID;
 } Joystick;
 
-Joystick* Joystick_new(char* xPin_file, char* yPin_file);
+Joystick* generateJoystick(char* xPin_file, char* yPin_file);
 
-void Joystick_destroy(Joystick* joystick);
+void destroyJoystick(Joystick* joystick);
 
 void startReading_JS(Joystick* joystick);
 

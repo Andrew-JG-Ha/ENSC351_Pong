@@ -53,10 +53,17 @@ void destroyButton(GpioButton* button, bool threaded) {
     
 }
 
-static void* buttonThread(GpioButton* button) {
+static void* buttonThread(void* but) {
+    GpioButton* button = (GpioButton*) but;
+    char path [MAX_LENGTH];
+    //printf("Before sprintf: %s\n", path);
+    sprintf(path,"%s%s" ,button->filePath, VALUE_FILE);
     while (true) {
         pthread_mutex_lock(&button->mId);
-        button->val = readButton(button);
+        waitForEdge(path, -1);
+        button->val = !button->val;
+        printf("Button val: %d", button->val);
+        pthread_mutex_unlock(&button->mId);
     }
     return NULL;
 }
@@ -71,5 +78,9 @@ void runButtonThread(GpioButton* button) {
 void stopButtonThread(GpioButton* button) {
     if (pthread_cancel(button->tId)) {
         perror("ERROR: couldn't stop button thread");
+    }
+    if (!pthread_join(button->tId, NULL)) {
+        perror("Thread join failed. \n");
+        exit(1);
     }
 }

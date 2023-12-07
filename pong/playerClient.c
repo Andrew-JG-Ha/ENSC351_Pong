@@ -8,7 +8,7 @@ Player* generatePlayer(HardwareParams hardwareParams) {
     newPlayer->joyStickLed = generateLed(hardwareParams.joyStickLed);
     newPlayer->upButton = generateButton(hardwareParams.upButton, false);
     newPlayer->downButton = generateButton(hardwareParams.downButton, false);
-    newPlayer->profileSwitchButton = generateButton(hardwareParams.profileSwitchButton, true);
+    newPlayer->profileSwitchButton = generateButton(hardwareParams.profileSwitchButton, false);
     newPlayer->joystick = Joystick_new(hardwareParams.joystick.xpin, hardwareParams.joystick.ypin);
     newPlayer->currPlayerDir = 0;
     pthread_mutex_init(&newPlayer->mId, NULL);
@@ -21,8 +21,6 @@ static void* playerThread(void* playerObj) { // threaded
     int up = 0;
     int down = 0;
     int playerDir = 0;
-
-
     bool buttonPressed = false;
     while(true) {
         if (readButton(player->profileSwitchButton) == 1 && buttonPressed == false) {
@@ -35,8 +33,7 @@ static void* playerThread(void* playerObj) { // threaded
                 isButtonInput = true;
             }
         }
-        
-        if (isButtonInput == true) {
+        if (isButtonInput) {
             up = readButton(player->upButton);
             down = readButton(player->downButton);
             if (up == down) {
@@ -72,23 +69,12 @@ void destroyPlayer(Player* player) {
     turnLedOff(player->buttonLed);
     turnLedOff(player->joyStickLed);
     destroyLed(player->buttonLed);
-    free(player->buttonLed);
-    player->buttonLed = NULL;
     destroyLed(player->joyStickLed);
-    free(player->joyStickLed);
-    player->joyStickLed = NULL;
-    destroyButton(player->profileSwitchButton, true);
-    free(player->profileSwitchButton);
-    player->profileSwitchButton = NULL;
+    //stopButtonThread(player->profileSwitchButton);
+    destroyButton(player->profileSwitchButton, false);
     destroyButton(player->downButton, false);
-    free(player->downButton);
-    player->downButton = NULL;
     destroyButton(player->upButton, false);
-    free(player->upButton);
-    player->upButton = NULL;
     Joystick_destroy(player->joystick);
-    free(player->joystick);
-    player->joystick = NULL;
     free(player);
     player = NULL;
 }
@@ -103,6 +89,10 @@ void runPlayerClient(Player* player) {
 void stopPlayerClient(Player* player) {
     if (pthread_cancel(player->tId)) {
         perror("ERROR: couldn't stop player thread");
+    }
+    if (!pthread_join(player->tId, NULL)) {
+        perror("Thread join failed. \n");
+        exit(1);
     }
 }
 
@@ -132,11 +122,15 @@ int main() {
     h.joystick.ypin = "in_voltage3_raw";
 
     Player* play = generatePlayer(h);
-
+    /**
     if (pthread_create(&play->tId, NULL, playerThread, play)) {
         perror("ERROR");
     }
     pthread_detach(play->tId);
+    **/
+    runPlayerClient(play);
+    //configureGPIO(h.profileSwitchButton.pinNumber, "rising");
+    //runButtonThread(play->profileSwitchButton);
 
     int currTime = 0;
     int startTime = getTimeInMilliS();
@@ -144,15 +138,15 @@ int main() {
     while(true) {
         sleepForMs(100);
         pthread_mutex_lock(&play->mId);
-        printf("Current Value: %d\n", play->currPlayerDir);
+        //printf("Current Value: %d\n", play->currPlayerDir);
         pthread_mutex_unlock(&play->mId);
         currTime = getTimeInMilliS();
-        if (currTime - startTime > 10000){
-            pthread_cancel(play->tId);
-            destroyPlayer(play);
-            exit(1);
+        if (currTime - startTime > 100000){
+            break;
         }
     }
+    stopPlayerClient(play);
+    destroyPlayer(play);
 }
 
 

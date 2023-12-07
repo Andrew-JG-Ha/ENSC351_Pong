@@ -166,7 +166,7 @@ Requires that the pin has it's edge set to the intended edge setting. Do not use
 int waitForEdge(char* path, long long int timeInMs) {
     struct epoll_event event;
     memset(&event, 0, sizeof(event));
-    int nfds, fd, n;
+    int nfds = 0, fd = 0, n = 0;
     int epollFileDescriptor = epoll_create1(0);
     
     if (epollFileDescriptor == -1) {
@@ -192,7 +192,6 @@ int waitForEdge(char* path, long long int timeInMs) {
 
     for (n = 0; n < MAX_EVENTS; ++n) {
         nfds = epoll_wait(epollFileDescriptor, &event, MAX_EVENTS, timeInMs);
-
         if (nfds == -1) {
             perror("epoll_wait.");
             close(epollFileDescriptor);
@@ -200,6 +199,7 @@ int waitForEdge(char* path, long long int timeInMs) {
             exit(EXIT_FAILURE);
         }
     }
+    printf("Button pressed\n");
     close(epollFileDescriptor);
     close(fd);
     return 1;
@@ -278,7 +278,7 @@ int edgeTrigger(char* fileDirectory, char* fileName, long long timeout, void (*f
 int awaitChange(char* fileDirectory, char* fileName, long long minimumTime, long long timeout, char* activeState, void (*funcEdge)(void), void (*funcHold)(void)) {
     char currentVal[MAX_LENGTH];
     strcpy(currentVal, activeState);
-    edgeTrigger(fileDirectory, fileName, timeout, funcEdge);
+    waitForEdge(fileDirectory, timeout);
     long long startTime =  getTimeInMilliS();
     long long currentTime = startTime;
     readFile(fileDirectory, fileName, currentVal);

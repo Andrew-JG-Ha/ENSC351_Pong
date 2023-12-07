@@ -1,7 +1,7 @@
 #ifndef GPIO_BUTTON_H
 #define GPIO_BUTTON_H
 #include <pthread.h>
-#include "utility/utils.h"
+#include "../utility/utils.h"
 
 typedef struct ButtonHardware {
     char* pin;

@@ -53,6 +53,24 @@ void writeToRegI2C(int i2cFileDesc, unsigned char regAddr, unsigned char* valueA
     }
 }
 
+void writeI2CReg(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress) {
+    unsigned char buff[2 * bytes + 1];
+    buff[0] = regAddr;
+    for (int i = 1; i < 2 * bytes + 1; i++) {
+        if (i % 2) {
+            buff[i] = *(dataAddress + (i/2));
+        }
+        else { 
+            buff[i] = 0;
+        }
+    }
+    int res = write(i2cFileDesc, buff, 2 * bytes + 1);
+    if (res != (2 * bytes + 1)) {
+        perror("I2C: Unable to write i2c register.");
+        exit(1);
+    }
+}
+
 unsigned char readRegI2C(int i2cFileDesc, unsigned char regAddr) {
     int res = write(i2cFileDesc, &regAddr, sizeof(regAddr));
     if (res != sizeof(regAddr)) {

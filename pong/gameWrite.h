@@ -1,6 +1,8 @@
 #ifndef GAMEWRITE_H
 #define GAMEWRITE_H
 
+#include "gameParser.h"
+
 #define BYTES_TO_WRITE 8
 
 typedef struct MatrixHardware {
@@ -10,6 +12,6 @@ typedef struct MatrixHardware {
     unsigned char Matrix4;
 } MatrixHardware;
 
-void writeData(int i2cFileDesc, int boardSize, MatrixHardware* mat, GameEncodings* encodings);
+void writeData(int i2cFileDesc, int boardSize, MatrixHardware mat, GameEncodings* encodings);
 
 #endif

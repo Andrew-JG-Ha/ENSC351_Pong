@@ -17,7 +17,7 @@ int main() {
     Pin dataPins[4];
     
     // initializing and defining pins 
-    outHW.ledScreen.dataPins = dataPins;
+    outHW.lcdScreen.dataPins = dataPins;
     initPlayer1HW(&inHW_player1);
     initPlayer2HW(&inHW_player2);
     initGameServerHW(&outHW);

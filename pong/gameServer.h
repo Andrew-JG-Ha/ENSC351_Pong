@@ -5,6 +5,7 @@
 #include "hardware/lcd.h"
 #include "gameWrite.h"
 #include "playerClient.h"
+#include "gameParser.h"
 
 #define BOARD_SIZE 16
 #define PADDLE_SIZE 3
@@ -19,7 +20,7 @@ typedef struct OutputHardware {
 } OutputHardware;
 
 typedef struct GameServer {
-    pthread_t pId;
+    pthread_t tId;
     int board[BOARD_SIZE][BOARD_SIZE];
     int scoreLeft;
     int scoreRight;
@@ -29,6 +30,7 @@ typedef struct GameServer {
     Player* player2;
     LcdScreen* lcdScreen;
     MatrixHardware matrixHardware;  
+    GameEncodings* gameEncodings;
 } GameServer;
 
 GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw);

@@ -2,7 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
+#include "utility/i2c_utils.h"
 #include "gameServer.h"
 #include "gameLogic.h"
 #include "gameParser.h"
@@ -21,25 +23,51 @@ GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     newGame->ballY = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
-    newGame->lcdScreen = generateLcd(hw.ledScreen);
     newGame->matrixHardware = hw.matrix;
+    newGame->lcdScreen = generateLcd(hw.lcdScreen);
+    newGame->gameEncodings = generateGameEncodings();
+    return newGame;
 }
 
 void destroyGameServer(GameServer* gameServer) {
     destroyLcd(gameServer->lcdScreen);
     gameServer->lcdScreen = NULL;
+    destroyGameEncodings(gameServer->gameEncodings);
+    gameServer->gameEncodings = NULL;
     free(gameServer);
     gameServer = NULL;
 }
 
-void runServer() {
-    GameServer* game;
-    initializeGame(game);
+void runServer(GameServer* gameServer) {
+    if (pthread_create(&gameServer->tId, NULL, serverThread, gameServer)) {
+        perror("ERROR: couldn't initialize server thread");
+    }
+    pthread_detach(gameServer->tId);
+}
 
-    /*while (1) {
-        updateGame(game);
-        sleepForMS(10000);
-    }*/
+static void* serverThread(void* serverObj) {
+    GameServer* gameServer = (GameServer*) serverObj;
+    initializeGame(gameServer);
+    int fileDesc1; 
+    // int fileDesc2 = 
+    // int fileDesc3 = 
+    // int fileDesc4 = 
+
+    while (true) {
+        parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
+        writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
+    }
+
+} 
+
+void stopServer(GameServer* GameServer) {
+    if (pthread_cancel(GameServer->tId)) {
+        perror("ERROR: couldn't stop player thread");
+    }
+    if (!pthread_join(GameServer->tId, NULL)) {
+        perror("Server thread join failed. \n");
+        exit(1);
+    }
 }
 
 // initialize game, paddles/ball represented by 1

@@ -17,7 +17,7 @@ int main() {
     Pin dataPins[4];
     
     // initializing and defining pins 
-    outHW.ledScreen.dataPins = dataPins;
+    outHW.lcdScreen.dataPins = dataPins;
     initPlayer1HW(&inHW_player1);
     initPlayer2HW(&inHW_player2);
     initGameServerHW(&outHW);
@@ -41,29 +41,29 @@ int main() {
 }
 
 void initGameServerHW(OutputHardware* outputHardware) {
-    outputHardware->ledScreen.dataPins[0].pin = "p8.27";
-    outputHardware->ledScreen.dataPins[0].gpioPin = "gpio86";
-    outputHardware->ledScreen.dataPins[0].pinNumber = "86";
+    outputHardware->lcdScreen.dataPins[0].pin = "p8.27";
+    outputHardware->lcdScreen.dataPins[0].gpioPin = "gpio86";
+    outputHardware->lcdScreen.dataPins[0].pinNumber = "86";
 
-    outputHardware->ledScreen.dataPins[1].pin = "p8.28";
-    outputHardware->ledScreen.dataPins[1].gpioPin = "gpio88";
-    outputHardware->ledScreen.dataPins[1].pinNumber = "88";
+    outputHardware->lcdScreen.dataPins[1].pin = "p8.28";
+    outputHardware->lcdScreen.dataPins[1].gpioPin = "gpio88";
+    outputHardware->lcdScreen.dataPins[1].pinNumber = "88";
 
-    outputHardware->ledScreen.dataPins[2].pin = "p8.29";
-    outputHardware->ledScreen.dataPins[2].gpioPin = "gpio87";
-    outputHardware->ledScreen.dataPins[2].pinNumber = "87";
+    outputHardware->lcdScreen.dataPins[2].pin = "p8.29";
+    outputHardware->lcdScreen.dataPins[2].gpioPin = "gpio87";
+    outputHardware->lcdScreen.dataPins[2].pinNumber = "87";
 
-    outputHardware->ledScreen.dataPins[3].pin = "p8.30";
-    outputHardware->ledScreen.dataPins[3].gpioPin = "gpio89";
-    outputHardware->ledScreen.dataPins[3].pinNumber = "89";
+    outputHardware->lcdScreen.dataPins[3].pin = "p8.30";
+    outputHardware->lcdScreen.dataPins[3].gpioPin = "gpio89";
+    outputHardware->lcdScreen.dataPins[3].pinNumber = "89";
 
-    outputHardware->ledScreen.ePin.pin = "p8.31";
-    outputHardware->ledScreen.ePin.gpioPin = "gpio10";
-    outputHardware->ledScreen.ePin.pinNumber = "10";
+    outputHardware->lcdScreen.ePin.pin = "p8.31";
+    outputHardware->lcdScreen.ePin.gpioPin = "gpio10";
+    outputHardware->lcdScreen.ePin.pinNumber = "10";
 
-    outputHardware->ledScreen.rsPin.pin = "p8.32";
-    outputHardware->ledScreen.rsPin.gpioPin = "gpio11";
-    outputHardware->ledScreen.rsPin.pinNumber = "11";
+    outputHardware->lcdScreen.rsPin.pin = "p8.32";
+    outputHardware->lcdScreen.rsPin.gpioPin = "gpio11";
+    outputHardware->lcdScreen.rsPin.pinNumber = "11";
 
     outputHardware->matrix.Matrix1 = 0x70;
     outputHardware->matrix.Matrix2 = 0x72;
@@ -73,53 +73,53 @@ void initGameServerHW(OutputHardware* outputHardware) {
 }
 
 void initPlayer1HW(InputHardware* inputHardware) {
-    inputHardware->buttonLed.pin = "p8.13";
-    inputHardware->buttonLed.gpioPin = "gpio23";
-    inputHardware->buttonLed.pinNumber = "23";
+    inputHardware->buttonLed.pin = "p8.40";
+    inputHardware->buttonLed.gpioPin = "gpio77";
+    inputHardware->buttonLed.pinNumber = "77";
 
-    inputHardware->joyStickLed.pin = "p8.46";
-    inputHardware->joyStickLed.gpioPin = "gpio71";
-    inputHardware->joyStickLed.pinNumber = "71";
+    inputHardware->joyStickLed.pin = "p8.39";
+    inputHardware->joyStickLed.gpioPin = "gpio76";
+    inputHardware->joyStickLed.pinNumber = "76";
 
-    inputHardware->upButton.pin = "p8.7";
-    inputHardware->upButton.gpioPin = "gpio66";
-    inputHardware->upButton.pinNumber = "66";
+    inputHardware->upButton.pin = "p8.33";
+    inputHardware->upButton.gpioPin = "gpio9";
+    inputHardware->upButton.pinNumber = "9";
 
-    inputHardware->downButton.pin = "p8.9";
-    inputHardware->downButton.gpioPin = "gpio69";
-    inputHardware->downButton.pinNumber = "69";
+    inputHardware->downButton.pin = "p8.34";
+    inputHardware->downButton.gpioPin = "gpio81";
+    inputHardware->downButton.pinNumber = "81";
 
-    inputHardware->profileSwitchButton.pin = "p8.8";
-    inputHardware->profileSwitchButton.gpioPin = "gpio67";
-    inputHardware->profileSwitchButton.pinNumber = "67";
+    inputHardware->profileSwitchButton.pin = "p8.36";
+    inputHardware->profileSwitchButton.gpioPin = "gpio80";
+    inputHardware->profileSwitchButton.pinNumber = "80";
 
     inputHardware->joystick.xpin = "in_voltage2_raw";
     inputHardware->joystick.ypin = "in_voltage3_raw";
 }
 
 void initPlayer2HW(InputHardware* inputHardware) {
-    inputHardware->buttonLed.pin = "p8.13";
-    inputHardware->buttonLed.gpioPin = "gpio23";
-    inputHardware->buttonLed.pinNumber = "23";
+    inputHardware->buttonLed.pin = "p8.8";
+    inputHardware->buttonLed.gpioPin = "gpio67";
+    inputHardware->buttonLed.pinNumber = "67";
 
-    inputHardware->joyStickLed.pin = "p8.46";
-    inputHardware->joyStickLed.gpioPin = "gpio71";
-    inputHardware->joyStickLed.pinNumber = "71";
+    inputHardware->joyStickLed.pin = "p8.7";
+    inputHardware->joyStickLed.gpioPin = "gpio66";
+    inputHardware->joyStickLed.pinNumber = "66";
 
-    inputHardware->upButton.pin = "p8.7";
-    inputHardware->upButton.gpioPin = "gpio66";
-    inputHardware->upButton.pinNumber = "66";
+    inputHardware->upButton.pin = "p8.12";
+    inputHardware->upButton.gpioPin = "gpio44";
+    inputHardware->upButton.pinNumber = "44";
 
-    inputHardware->downButton.pin = "p8.9";
-    inputHardware->downButton.gpioPin = "gpio69";
-    inputHardware->downButton.pinNumber = "69";
+    inputHardware->downButton.pin = "p8.13";
+    inputHardware->downButton.gpioPin = "gpio23";
+    inputHardware->downButton.pinNumber = "23";
 
-    inputHardware->profileSwitchButton.pin = "p8.8";
-    inputHardware->profileSwitchButton.gpioPin = "gpio67";
-    inputHardware->profileSwitchButton.pinNumber = "67";
+    inputHardware->profileSwitchButton.pin = "p8.11";
+    inputHardware->profileSwitchButton.gpioPin = "gpio45";
+    inputHardware->profileSwitchButton.pinNumber = "45";
 
-    inputHardware->joystick.xpin = "in_voltage2_raw";
-    inputHardware->joystick.ypin = "in_voltage3_raw";
+    inputHardware->joystick.xpin = "in_voltage4_raw";
+    inputHardware->joystick.ypin = "in_voltage5_raw";
 }
 
 void initBoardHW() {
@@ -142,5 +142,7 @@ void initBoardHW() {
 }
 
 void cleanup(Player* player1, Player* player2, GameServer* server) {
-
+    destroyGameServer(server);
+    destroyPlayer(player1);
+    destroyPlayer(player2);
 }

@@ -1,6 +1,8 @@
 #ifndef GAMEWRITE_H
 #define GAMEWRITE_H
 
+#include "gameParser.h"
+
 #define BYTES_TO_WRITE 8
 
 typedef struct MatrixHardware {

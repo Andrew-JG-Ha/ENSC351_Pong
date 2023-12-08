@@ -3,21 +3,16 @@
 
 #include "gameParser.h"
 
-#define BYTES_TO_WRITE 8
-
 typedef struct MatrixHardware {
-    Matrix Matrix1;
-    Matrix Matrix2;
-    Matrix Matrix3;
-    Matrix Matrix4;
+    int deviceAddress[4];
 } MatrixHardware;
 
 typedef struct Matrix {
-    unsigned char deviceAddress;
-    int i2cFileDesc;
+    int i2cFileDesc[4];
+    int deviceAddress[4];
 } Matrix;
 
-void writeData(int i2cFileDesc, int boardSize, MatrixHardware mat, GameEncodings* encodings);
-int enableMatrix(char* bus, MatrixHardware m);
-
+void writeData(int boardSize, Matrix* mat, GameEncodings* encodings);
+Matrix* initMatrix(char* bus, MatrixHardware m);
+void destroyMatrix(Matrix* m);
 #endif

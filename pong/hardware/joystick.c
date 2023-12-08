@@ -17,7 +17,7 @@ static int encodeDirection(Joystick joystick, int previousDescision);
 
 static void decodeDirection(Joystick* joystick, int direction);
 
-Joystick* generateJoystick(char* xPin_file, char* yPin_file) {
+Joystick* generateJoystick(char* xPin_file, char* yPin_file, int cent, int f) {
     Joystick* newJoystick = malloc(sizeof(Joystick));
     newJoystick->xPin = calloc(sizeof(char), MAX_LENGTH);
     newJoystick->yPin = calloc(sizeof(char), MAX_LENGTH);
@@ -25,6 +25,8 @@ Joystick* generateJoystick(char* xPin_file, char* yPin_file) {
     sprintf(newJoystick->yPin, "%s", yPin_file);
     newJoystick->leftRightDirection = 0;
     newJoystick->upDownDirection = 0;
+    newJoystick->center = cent;
+    newJoystick->flip = f;
     newJoystick->xReading = A2D_MAX_READING / 2;
     newJoystick->yReading = A2D_MAX_READING / 2;
     pthread_mutex_init(&newJoystick->mID, NULL);
@@ -61,12 +63,21 @@ void stopReading_JS(Joystick* joystick) {
 }
 
 int getUpDownDirection(Joystick* joystick) {
-    int direction = 0;
+    //int direction = 0;
+    int upBound = joystick->center + 400;
+    int lowBound = joystick->center - 400;
     joystick->xReading = joystickReadX(A2D_FILE_DIR, joystick->xPin);
     joystick->yReading = joystickReadY(A2D_FILE_DIR, joystick->yPin);
-    direction = encodeDirection(*joystick, direction);
-    decodeDirection(joystick, direction);
-    return joystick->upDownDirection;
+    if (joystick->yReading > upBound) {
+        joystick->upDownDirection = -1;
+    } else if (joystick->yReading < lowBound) {
+        joystick->upDownDirection = 1;
+    } else {
+        joystick->upDownDirection = 0;
+    }
+    //direction = encodeDirection(*joystick, direction);
+    //decodeDirection(joystick, direction);
+    return joystick->upDownDirection * joystick->flip;
 }
 
 static void* joystickRead_thread(void* joystickObject) { // constantly running and getting data

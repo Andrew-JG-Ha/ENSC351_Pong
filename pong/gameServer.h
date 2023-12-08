@@ -14,7 +14,7 @@
  * and update the display
 */
 typedef struct OutputHardware {
-    LcdHardware ledScreen;
+    LcdHardware lcdScreen;
     MatrixHardware matrix;
 } OutputHardware;
 

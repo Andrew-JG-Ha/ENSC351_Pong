@@ -17,8 +17,8 @@ GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     memset(newGame -> board, 0, sizeof(newGame->board));
     newGame->scoreLeft = 0;
     newGame->scoreRight = 0;
-    newGame->directionX = 0;
-    newGame->directionY = 0;
+    newGame->ballX = 0;
+    newGame->ballY = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
     newGame->lcdScreen = generateLcd(hw.ledScreen);
@@ -58,8 +58,8 @@ void initializeGame(GameServer *game) {
     int ballY = (int)ceil((double)BOARD_SIZE/2);
     game->board[ballX][ballY] = PADDLE_BALL;
 
-    game->directionX = 1;
-    game->directionY = 1;
+    game->ballX = 1;
+    game->ballY = 1;
 }
 
 void updateGame(GameServer *game) {
@@ -116,8 +116,8 @@ void updateGame(GameServer *game) {
             if (game->board[i][j] == PADDLE_BALL) {
                 game->board[i][j] = EMPTY;
 
-                int newI = i + game->directionY;
-                int newJ = j + game->directionX;
+                int newI = i + game->ballY;
+                int newJ = j + game->ballX;
 
                 // bounce off wall (top/bottom)
                 if (newI >= BOARD_SIZE) {
@@ -164,9 +164,9 @@ void updateGame(GameServer *game) {
                         int randomNumber = rand() % 2 + 1;
 
                         if (randomNumber == 0) {
-                            game->directionX = 1;
+                            game->ballX = 1;
                         } else {
-                            game->directionY = 1;
+                            game->ballY = 1;
                         }
 
                     }

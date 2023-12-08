@@ -6,10 +6,6 @@
 
 #include "utility/i2c_utils.h"
 #include "gameServer.h"
-#include "gameLogic.h"
-#include "gameParser.h"
-#include "gameWrite.h"
-#include "hardware/lcd.h"
 
 #define EMPTY 0
 #define PADDLE_BALL 1

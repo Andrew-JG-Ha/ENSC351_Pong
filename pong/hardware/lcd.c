@@ -12,16 +12,16 @@ static void enableWrite(LcdScreen screen);
 
 static void write4BitsToLcd(LcdScreen* screen, __uint8_t value);
 
-LcdScreen* generateLcd(LcdHardware lcdHardware, int numDataPins) {
+LcdScreen* generateLcd(LcdHardware lcdHardware) {
     LcdScreen* newLcdScreen = malloc(sizeof(LcdScreen));
-    newLcdScreen->numDataPins = numDataPins;
-    newLcdScreen->dataPinsFilePaths = calloc(numDataPins, sizeof(char*));
+    newLcdScreen->numDataPins = lcdHardware.numDataPins;
+    newLcdScreen->dataPinsFilePaths = calloc(lcdHardware.numDataPins, sizeof(char*));
     newLcdScreen->ePinFilePath = calloc(1, sizeof(char) * MAX_LEN);
     newLcdScreen->rsPinFilePath = calloc(1, sizeof(char) * MAX_LEN);
     sprintf(newLcdScreen->ePinFilePath, "%s%s/", GPIO_FILE_DIR, lcdHardware.ePin.gpioPin);
     initPin(newLcdScreen->ePinFilePath, lcdHardware.ePin.pin, lcdHardware.ePin.pinNumber);
     
-    for (int i = 0; i < numDataPins; i++) {
+    for (int i = 0; i < lcdHardware.numDataPins; i++) {
         newLcdScreen->dataPinsFilePaths[i] = calloc(1, sizeof(char)*MAX_LEN);
         sprintf(newLcdScreen->dataPinsFilePaths[i], "%s%s/", GPIO_FILE_DIR, lcdHardware.dataPins[i].gpioPin);
         initPin(newLcdScreen->dataPinsFilePaths[i], lcdHardware.dataPins[i].pin, lcdHardware.dataPins[i].pinNumber);

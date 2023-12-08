@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 #include "hardware/lcd.h"
+#include "playerClient.h"
 
 #define BOARD_SIZE 16
 #define PADDLE_SIZE 3
@@ -12,8 +13,10 @@
  * and update the display
 */
 typedef struct OutputHardware {
+typedef struct OutputHardware {
     LcdHardware ledScreen;
     MatrixHardware matrix;
+} OutputHardware;
 } OutputHardware;
 
 
@@ -24,8 +27,13 @@ typedef struct GameServer {
     int scoreRight;
     int directionX;
     int directionY;
+    Player* player1;
+    Player* player2;
+    LcdScreen* lcdScreen;
+    MatrixHardware matrixHardware;
+    
 
-} GameServer;
+} gameServer;
 
 GameServer* generateGameServer();
 void destroyGameServer(GameServer* gameServer);

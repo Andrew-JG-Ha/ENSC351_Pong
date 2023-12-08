@@ -4,8 +4,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "gameServer.h"'
+#include "gameServer.h"
 #include "utility/i2c_utils.h"
+#include "hardware/audio.h"
 
 #define EMPTY 0
 #define PADDLE_BALL 1
@@ -13,7 +14,7 @@
 static void* serverThread(void* serverObj);
 static void initializeGame(GameServer *game);
 
-GameServer* generateGameServer() {
+GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw) {
     GameServer* newGame = (GameServer*)malloc(sizeof(GameServer));
     memset(newGame -> board, 0, sizeof(newGame->board));
     newGame->scoreLeft = 0;
@@ -24,17 +25,17 @@ GameServer* generateGameServer() {
     newGame->ballColPos = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
-    newGame->matrixHardware = hw.matrix;
-    newGame->lcdScreen = generateLcd(hw.lcdScreen);
+    newGame->matrix = initMatrix(I2C_BUS_1, hw.matrix);
+    // newGame->lcdScreen = generateLcd(hw.lcdScreen);
     newGame->gameEncodings = generateGameEncodings();
 
     return newGame;
 }
 
 void destroyGameServer(GameServer* gameServer) {
-    destroyLcd(gameServer->lcdScreen);
-    gameServer->lcdScreen = NULL;
-    //destroyGameEncodings(gameServer->gameEncodings);
+    // destroyLcd(gameServer->lcdScreen);
+    // gameServer->lcdScreen = NULL;
+    destroyGameEncodings(gameServer->gameEncodings);
     gameServer->gameEncodings = NULL;
     free(gameServer);
     gameServer = NULL;
@@ -50,19 +51,12 @@ void runGameServer(GameServer* gameServer) {
 static void* serverThread(void* serverObj) {
     GameServer* gameServer = (GameServer*) serverObj;
     initializeGame(gameServer);
-    //int fileDesc1; 
-    char buff[1024];
-    // int fileDesc2 = 
-    // int fileDesc3 = 
-    // int fileDesc4 = 
-    //writeMessageToLcd(gameServer->lcdScreen, "Hello World");
-    printf("server started");
+
     while (true) {
-        sprintf(buff, "P1:%d  P2:%d", gameServer->player1->currPlayerDir, gameServer->player2->currPlayerDir);
-        printf("%s", buff);
-        writeMessageToLcd(gameServer->lcdScreen,buff);
-        //parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
-        //writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
+        parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
+        writeData(BOARD_SIZE, gameServer->matrix, gameServer->gameEncodings);
+        updateGame(gameServer);
+        sleepForMs(1000);
     }
     return NULL;
 } 
@@ -79,6 +73,8 @@ void stopGameServer(GameServer* gameServer) {
 
 // initialize game, paddles/ball represented by 1
 void initializeGame(GameServer *game) {
+    
+    bootUp();
 
     
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -150,7 +146,7 @@ void updateGame(GameServer *game) {
     if (game->player2->currPlayerDir == 1) {
         // move up
         moveColumnUp(game, 0);
-    } else if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
+    } else if (game->player2->currPlayerDir == -1) {
         // move down
         moveColumnDown(game, 0);
     }
@@ -165,6 +161,7 @@ void updateGame(GameServer *game) {
     
     // paddle collision (move across coloumns)
     if (game->board[nextStateRow][nextStateCol] == PADDLE_BALL) {
+        ping();
         game->ballColVelo = -game->ballColVelo;
         nextStateCol = game->ballColPos;
     } 
@@ -175,16 +172,39 @@ void updateGame(GameServer *game) {
         nextStateRow = game->ballRowPos;
     }
 
+    if(nextStateCol < 0) {
+        nextStateCol = 8;
+        nextStateRow = 8;
+        game->scoreLeft++;
+        game->ballColVelo = 1;
+        game->ballRowVelo = 1;
+        printf("scored on left player\n");
+
+
+    } else if (nextStateCol > BOARD_SIZE - 1) {
+        nextStateCol = 8;
+        nextStateRow = 8;
+        game->scoreRight++;
+        game->ballColVelo = 1;
+        game->ballRowVelo = 1;
+        printf(" scored on right player\n");
+
+    }
+
     // printf("left score is: %d, right score is %d\n", game->scoreLeft, game->scoreRight);
     // check scores and determine if match won
-    if (game->scoreLeft > 2 ) {
+    if (game->scoreLeft == 3 ) {
+        speak("game won by right player");
         printf("game won by right player\n");
+        pthread_exit(NULL);
         // SOUND/LCD =======================
 
     }
     
-    if (game->scoreRight > 2) {
+    if (game->scoreRight == 3) {
+        speak("game won by right player");
         printf("game won by right player\n");
+        pthread_exit(NULL);
         // SOUND/LCD =======================
     }
 

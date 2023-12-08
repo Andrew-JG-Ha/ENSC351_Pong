@@ -4,8 +4,6 @@
 #define USER_BUTTON "/sys/class/gpio/gpio72/"
 #define MAX_LENGTH 1024
 
-#define matrixAddress1 
-
 GameServer* createGameServer(Player* player1, Player* player2);
 void initPlayer2HW(InputHardware* inputHardware);
 void initPlayer1HW(InputHardware* inputHardware);

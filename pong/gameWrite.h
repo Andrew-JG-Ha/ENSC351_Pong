@@ -11,7 +11,5 @@ typedef struct MatrixHardware {
 } MatrixHardware;
 
 void writeData(int i2cFileDesc, int boardSize, MatrixHardware* mat, GameEncodings* encodings);
-MatrixHardware* generate_Matrix(unsigned char m1, unsigned char m2, unsigned char m3, unsigned char m4);
-void destroy_Matrix(MatrixHardware* m);
 
 #endif

@@ -12,6 +12,7 @@ typedef struct LcdHardware {
     Pin* dataPins;
     Pin rsPin;
     Pin ePin;
+    int numDataPins;
 } LcdHardware;
 
 typedef struct LcdScreen {
@@ -21,7 +22,7 @@ typedef struct LcdScreen {
     int numDataPins;
 } LcdScreen;
 
-LcdScreen* generateLcd(LcdHardware lcdHardware, int numDataPins);
+LcdScreen* generateLcd(LcdHardware lcdHardware);
 
 void destroyLcd(LcdScreen* screen);
 

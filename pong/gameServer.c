@@ -4,8 +4,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "gameServer.h"'
 #include "utility/i2c_utils.h"
-#include "gameServer.h"
 
 #define EMPTY 0
 #define PADDLE_BALL 1
@@ -13,18 +13,21 @@
 static void* serverThread(void* serverObj);
 static void initializeGame(GameServer *game);
 
-GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw) {
+GameServer* generateGameServer() {
     GameServer* newGame = (GameServer*)malloc(sizeof(GameServer));
     memset(newGame -> board, 0, sizeof(newGame->board));
     newGame->scoreLeft = 0;
     newGame->scoreRight = 0;
-    newGame->ballX = 0;
-    newGame->ballY = 0;
+    newGame->ballRowVelo = 0;
+    newGame->ballColVelo = 0;
+    newGame->ballRowPos = 0;
+    newGame->ballColPos = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
     newGame->matrixHardware = hw.matrix;
     newGame->lcdScreen = generateLcd(hw.lcdScreen);
     newGame->gameEncodings = generateGameEncodings();
+
     return newGame;
 }
 
@@ -70,7 +73,9 @@ void stopGameServer(GameServer* gameServer) {
 }
 
 // initialize game, paddles/ball represented by 1
-static void initializeGame(GameServer *game) {
+void initializeGame(GameServer *game) {
+
+    
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             game->board[i][j] = EMPTY;
@@ -78,123 +83,109 @@ static void initializeGame(GameServer *game) {
     }
 
     for (int i = 0; i < PADDLE_SIZE; i++) {
-        game->board[i][0] = PADDLE_BALL;
-        game->board[BOARD_SIZE - 1 - i][0] = PADDLE_BALL;
+            game->board[BOARD_SIZE/2 + i][0] = PADDLE_BALL;
+            game->board[BOARD_SIZE/2 + i][BOARD_SIZE - 1] = PADDLE_BALL;
     }
+    game->ballRowPos = (int)ceil((double)BOARD_SIZE/2);
+    game->ballColPos = (int)ceil((double)BOARD_SIZE/2);
 
-    int ballX = (int)ceil((double)BOARD_SIZE/2);
-    int ballY = (int)ceil((double)BOARD_SIZE/2);
-    game->board[ballX][ballY] = PADDLE_BALL;
+    int ballRowPos = game->ballRowPos;
+    int ballColPos = game->ballColPos;
+    game->board[ballRowPos][ballColPos] = PADDLE_BALL;
 
-    game->ballX = 1;
-    game->ballY = 1;
+    game->ballRowVelo = 1;
+    game->ballColVelo = 1;
 }
 
+
+void moveColumnDown(GameServer* game, int j) {
+    int i = 0;
+
+    while (i < BOARD_SIZE && game->board[i][j] != PADDLE_BALL) {
+        i++;
+    }
+
+    if (i < BOARD_SIZE - PADDLE_SIZE) {
+        game->board[i][j] = EMPTY;
+
+        for (int k = 1; k <= 4; k++) {
+            game->board[i + k][j] = PADDLE_BALL;
+        }
+    }
+}
+
+void moveColumnUp(GameServer* game, int j) {
+    int i = BOARD_SIZE - 1;
+
+    while (i > 0 && game->board[i][j] != PADDLE_BALL) {
+        i--;
+    }
+
+    if (i >= PADDLE_SIZE) {
+        game->board[i][j] = EMPTY;
+
+        for (int k = 1; k <= 4; k++) {
+            game->board[i - k][j] = PADDLE_BALL;
+        }
+    }
+}
+
+
 void updateGame(GameServer *game) {
-    // player 1 (right) paddles, placeholder for inputs later
-    // up
+    // player 1 (right) paddles
     if (game->player1->currPlayerDir == 1) {
         // move up
-        for (int i = 1; i < BOARD_SIZE; i++) {
-            if (game->board[i][0] == PADDLE_BALL) {
-                if (i - 1 >= 0) {
-                    game->board[i][0] = EMPTY;
-                    game->board[i-1][0] = PADDLE_BALL;
-                }
-            }
-        }
+        moveColumnUp(game, BOARD_SIZE - 1);
     } else if (game->player1->currPlayerDir == -1) {
         // move down
-        for (int i = BOARD_SIZE - 2; i >= 0; i--) {
-            if (game->board[i][0] == PADDLE_BALL) {
-                if (i + 1 < BOARD_SIZE) {
-                    game->board[i][0] = EMPTY;
-                    game->board[i + 1][0] = PADDLE_BALL;
-                }
-            }
-        }
+        moveColumnDown(game, BOARD_SIZE - 1);
     }
 
     // player 2 (left) paddles
     if (game->player2->currPlayerDir == 1) {
         // move up
-        for (int i = 1; i < BOARD_SIZE; i++) {
-            if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
-                if (i - 1 >= 0) {
-                    game->board[i][BOARD_SIZE - 1] = EMPTY;
-                    game->board[i-1][BOARD_SIZE - 1] = PADDLE_BALL;
-                }
-            }
-        }
-    } else if (game->player2->currPlayerDir == -1) {
+        moveColumnUp(game, 0);
+    } else if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
         // move down
-        for (int i = BOARD_SIZE - 2; i >= 0; i--) {
-            if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
-                if (i + 1 < BOARD_SIZE) {
-                    game->board[i][BOARD_SIZE - 1] = EMPTY;
-                    game->board[i + 1][BOARD_SIZE - 1] = PADDLE_BALL;
-                }
-            }
-        }
+        moveColumnDown(game, 0);
     }
 
-    for (int i = 1; i < BOARD_SIZE - 2; i++) {
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (game->board[i][j] == PADDLE_BALL) {
-                game->board[i][j] = EMPTY;
+    // find ball and move according to ballrowvballRowVelo/col
+    // currentState
+    game->board[game->ballRowPos][game->ballColPos] = EMPTY;
 
-                int newI = i + game->ballY;
-                int newJ = j + game->ballX;
+    //nextState
+    int nextStateCol = game->ballColPos + game->ballColVelo;
+    int nextStateRow = game->ballRowPos + game->ballRowVelo;
+    
+    // paddle collision (move across coloumns)
+    if (game->board[nextStateRow][nextStateCol] == PADDLE_BALL) {
+        game->ballColVelo = -game->ballColVelo;
+        nextStateCol = game->ballColPos;
+    } 
 
-                // bounce off wall (top/bottom)
-                if (newI >= BOARD_SIZE) {
-                    newI = i - 1;
-                    game->ballY = -1;
-                } else if (i == 0) {
-                    newI = i + 1;
-                    game->ballY = 1;
-                }
-
-                // right paddle collision
-                if (newJ == BOARD_SIZE - 1 && game->board[newI][newJ] == PADDLE_BALL) {
-                    newJ = j - 1;
-                    game->ballX = -1;
-                }
-
-                // left paddle collision
-                if (newJ == 0 && game->board[newI][newJ] == PADDLE_BALL) {
-                    newJ = j + 1;  
-                    game->ballX = 1;
-                }
-
-                game->board[newI][newJ] = PADDLE_BALL;
-
-                if (j == 0 || j == BOARD_SIZE - 1) {
-                    // SCORE =============================================================
-                    if (j == 0) {
-                        game->scoreRight++;
-                    } else if (j == BOARD_SIZE - 1) {
-                        game->scoreLeft++;
-                    }
-
-                    if (game->scoreLeft == 3) {
-                        // left win =================================
-                    } else if (game->scoreRight == 3) {
-                        // right win ==================================
-                    } else {
-                        // restart
-                        game->board[i][j] = EMPTY;
-
-                        int ballX = (int)ceil((double)BOARD_SIZE/2);
-                        int ballY = (int)ceil((double)BOARD_SIZE/2);
-                        game->board[ballX][ballY] = PADDLE_BALL;
-
-                        game->ballX = 1;
-
-                        game->ballY = 1;
-                    }
-                }    
-            }
-        }
+    // top/bot collision (move across rows)
+    if (nextStateRow < 0 || nextStateRow > BOARD_SIZE - 1) {
+        game->ballRowVelo = -game->ballRowVelo;
+        nextStateRow = game->ballRowPos;
     }
+
+    // printf("left score is: %d, right score is %d\n", game->scoreLeft, game->scoreRight);
+    // check scores and determine if match won
+    if (game->scoreLeft > 2 ) {
+        printf("game won by right player\n");
+        // SOUND/LCD =======================
+
+    }
+    
+    if (game->scoreRight > 2) {
+        printf("game won by right player\n");
+        // SOUND/LCD =======================
+    }
+
+    game->ballColPos = nextStateCol;
+    game->ballRowPos = nextStateRow;
+    // set new position 
+    game->board[game->ballRowPos][game->ballColPos] = PADDLE_BALL;
+    
 }

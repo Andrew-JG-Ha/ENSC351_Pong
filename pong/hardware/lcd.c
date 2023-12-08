@@ -133,7 +133,7 @@ static void initPin(char* fileDir, char* pin, char* pinNumber) {
         writeToFile(GPIO_FILE_DIR, "export", pinNumber);
     }
     writeToFile(fileDir, "direction", "out");
-    //writeToFile(fileDir, "active_low", "0");
+    writeToFile(fileDir, "active_low", "0");
     writeToFile(fileDir, VALUE_FILE, "0");
 }
 

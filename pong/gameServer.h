@@ -7,13 +7,15 @@
 #include "playerClient.h"
 #include "gameParser.h"
 
+
 #define BOARD_SIZE 16
-#define PADDLE_SIZE 3
+#define PADDLE_SIZE 4
 
 /**
  * Game server would read the playerClient desired move ie up/down/nothing and update game state
  * and update the display
 */
+
 typedef struct OutputHardware {
     LcdHardware lcdScreen;
     //MatrixHardware matrix;
@@ -33,9 +35,14 @@ typedef struct GameServer {
     GameEncodings* gameEncodings;
 } GameServer;
 
-GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw);
+
+GameServer* generateGameServer();
 void destroyGameServer(GameServer* gameServer);
 void runGameServer(GameServer* gameServer);
 void stopGameServer(GameServer* gameServer);
+void initializeGame(GameServer *game);
+void updateGame(GameServer *game);
+void moveColumnDown(GameServer* game, int j);
+void moveColumnUp(GameServer* game, int j);
 
 #endif

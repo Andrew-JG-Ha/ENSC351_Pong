@@ -9,6 +9,8 @@
 typedef struct JoystickHardware {
     char* xpin;
     char* ypin;
+    int center;
+    int flip;
 } JoystickHardware;
 
 typedef struct Joystick {
@@ -16,13 +18,15 @@ typedef struct Joystick {
     char* yPin;
     int yReading;
     int xReading;
+    int center;
+    int flip;
     int upDownDirection;        // [up:-1, none:0, down:1]
     int leftRightDirection;     // [left:-1, none:0, right:1]
     pthread_mutex_t mID;
     pthread_t tID;
 } Joystick;
 
-Joystick* generateJoystick(char* xPin_file, char* yPin_file);
+Joystick* generateJoystick(char* xPin_file, char* yPin_file, int cent, int f);
 
 void destroyJoystick(Joystick* joystick);
 

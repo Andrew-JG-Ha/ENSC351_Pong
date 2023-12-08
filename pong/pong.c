@@ -30,11 +30,12 @@ int main() {
     player1 = generatePlayer(inHW_player1);
     player2 = generatePlayer(inHW_player2);
     gameServer = generateGameServer(player1, player2, outHW);
-
     // Start threads
     runPlayerClient(player1);
-    runPlayerClient(player2);    
-
+    runPlayerClient(player2);  
+    char c[1013];
+    sprintf(c, "%s%s", USER_BUTTON, "value");
+    waitForEdge(c, -1);
     // waitForEdge();
 
     // Cleanup
@@ -42,6 +43,7 @@ int main() {
 }
 
 void initGameServerHW(OutputHardware* outputHardware) {
+    outputHardware->lcdScreen.numDataPins = 4;
     outputHardware->lcdScreen.dataPins[0].pin = "p8.27";
     outputHardware->lcdScreen.dataPins[0].gpioPin = "gpio86";
     outputHardware->lcdScreen.dataPins[0].pinNumber = "86";
@@ -66,10 +68,10 @@ void initGameServerHW(OutputHardware* outputHardware) {
     outputHardware->lcdScreen.rsPin.gpioPin = "gpio11";
     outputHardware->lcdScreen.rsPin.pinNumber = "11";
 
-    outputHardware->matrix.Matrix1 = 0x70;
-    outputHardware->matrix.Matrix2 = 0x72;
-    outputHardware->matrix.Matrix3 = 0x71;
-    outputHardware->matrix.Matrix4 = 0x73;
+    // outputHardware->matrix.Matrix1 = 0x70;
+    // outputHardware->matrix.Matrix2 = 0x72;
+    // outputHardware->matrix.Matrix3 = 0x71;
+    // outputHardware->matrix.Matrix4 = 0x73;
     
 }
 
@@ -94,18 +96,20 @@ void initPlayer1HW(InputHardware* inputHardware) {
     inputHardware->profileSwitchButton.gpioPin = "gpio80";
     inputHardware->profileSwitchButton.pinNumber = "80";
 
+    inputHardware->joystick.center = 2045;
+    inputHardware->joystick.flip = 1;
     inputHardware->joystick.xpin = "in_voltage2_raw";
     inputHardware->joystick.ypin = "in_voltage3_raw";
 }
 
 void initPlayer2HW(InputHardware* inputHardware) {
-    inputHardware->buttonLed.pin = "p8.8";
-    inputHardware->buttonLed.gpioPin = "gpio67";
-    inputHardware->buttonLed.pinNumber = "67";
+    inputHardware->buttonLed.pin = "p8.16";
+    inputHardware->buttonLed.gpioPin = "gpio46";
+    inputHardware->buttonLed.pinNumber = "46";
 
-    inputHardware->joyStickLed.pin = "p8.7";
-    inputHardware->joyStickLed.gpioPin = "gpio66";
-    inputHardware->joyStickLed.pinNumber = "66";
+    inputHardware->joyStickLed.pin = "p8.15";
+    inputHardware->joyStickLed.gpioPin = "gpio47";
+    inputHardware->joyStickLed.pinNumber = "47";
 
     inputHardware->upButton.pin = "p8.12";
     inputHardware->upButton.gpioPin = "gpio44";
@@ -119,9 +123,12 @@ void initPlayer2HW(InputHardware* inputHardware) {
     inputHardware->profileSwitchButton.gpioPin = "gpio45";
     inputHardware->profileSwitchButton.pinNumber = "45";
 
-    inputHardware->joystick.xpin = "in_voltage4_raw";
-    inputHardware->joystick.ypin = "in_voltage5_raw";
+    inputHardware->joystick.center = 1789;
+    inputHardware->joystick.flip = 1;
+    inputHardware->joystick.xpin = "in_voltage5_raw";
+    inputHardware->joystick.ypin = "in_voltage6_raw";
 }
+
 
 void initBoardHW() {
     char buffer[MAX_LENGTH]; 
@@ -132,14 +139,15 @@ void initBoardHW() {
     runCommand("echo in > /sys/class/gpio/gpio72/direction");
     runCommand("echo 1 > /sys/class/gpio/gpio72/active_low");
     runCommand("echo rising > /sys/class/gpio/gpio72/edge");
-    runCommand("i2cset -y 1 0x70 0x21 0x00");
-    runCommand("i2cset -y 1 0x70 0x81 0x00");
-    runCommand("i2cset -y 1 0x71 0x21 0x00");
-    runCommand("i2cset -y 1 0x71 0x81 0x00");
-    runCommand("i2cset -y 1 0x72 0x21 0x00");
-    runCommand("i2cset -y 1 0x72 0x81 0x00");
-    runCommand("i2cset -y 1 0x73 0x21 0x00");
-    runCommand("i2cset -y 1 0x73 0x81 0x00");
+//     runCommand("i2cset -y 1 0x70 0x21 0x00");
+//     runCommand("i2cset -y 1 0x70 0x81 0x00");
+//     runCommand("i2cset -y 1 0x71 0x21 0x00");
+//     runCommand("i2cset -y 1 0x71 0x81 0x00");
+//     runCommand("i2cset -y 1 0x72 0x21 0x00");
+//     runCommand("i2cset -y 1 0x72 0x81 0x00");
+//     runCommand("i2cset -y 1 0x73 0x21 0x00");
+//     runCommand("i2cset -y 1 0x73 0x81 0x00");
+// 
 }
 
 void cleanup(Player* player1, Player* player2, GameServer* server) {

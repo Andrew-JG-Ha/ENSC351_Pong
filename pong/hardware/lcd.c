@@ -180,7 +180,7 @@ int main() {
     LH.ePin = ePin;
     LH.rsPin = rsPin;
 
-    LcdScreen* newLcd = generateLcd(LH, 4);
+    LcdScreen* newLcd = generateLcd(LH);
     writeMessageToLcd(newLcd, "test");
     sleepForMs(100);
     destroyLcd(newLcd);

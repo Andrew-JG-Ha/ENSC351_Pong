@@ -7,7 +7,6 @@
 #define MAX_ENCODING 16
 
 static void intArr2Binary_split(int* intArr, int columns, unsigned char* returnAddress1, unsigned char* returnAddress2);
-static void orderEncodings(GameEncodings* gameEncodings);
 static void rotateNBits(unsigned char charVal, unsigned char* returnBuffer, int N);
 
 GameEncodings* generateGameEncodings() {

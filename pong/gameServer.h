@@ -35,7 +35,7 @@ typedef struct GameServer {
 
 GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw);
 void destroyGameServer(GameServer* gameServer);
-void runGameServer();
-void stopGameServer();
+void runGameServer(GameServer* gameServer);
+void stopGameServer(GameServer* gameServer);
 
 #endif

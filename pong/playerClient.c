@@ -9,7 +9,7 @@ Player* generatePlayer(InputHardware inputHardware) {
     newPlayer->upButton = generateButton(inputHardware.upButton, false);
     newPlayer->downButton = generateButton(inputHardware.downButton, false);
     newPlayer->profileSwitchButton = generateButton(inputHardware.profileSwitchButton, false);
-    newPlayer->joystick = Joystick_new(inputHardware.joystick.xpin, inputHardware.joystick.ypin);
+    newPlayer->joystick = generateJoystick(inputHardware.joystick.xpin, inputHardware.joystick.ypin);
     newPlayer->currPlayerDir = 0;
     pthread_mutex_init(&newPlayer->mId, NULL);
     return newPlayer;
@@ -74,7 +74,7 @@ void destroyPlayer(Player* player) {
     destroyButton(player->profileSwitchButton, false);
     destroyButton(player->downButton, false);
     destroyButton(player->upButton, false);
-    Joystick_destroy(player->joystick);
+    destroyJoystick(player->joystick);
     free(player);
     player = NULL;
 }

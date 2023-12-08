@@ -9,6 +9,7 @@ void initPlayer2HW(InputHardware* inputHardware);
 void initPlayer1HW(InputHardware* inputHardware);
 void cleanup(Player* player1, Player* player2, GameServer* server);
 void initBoardHW();
+void initGameServerHW(OutputHardware* outputHardware);
 
 int main() {
     InputHardware inHW_player1;

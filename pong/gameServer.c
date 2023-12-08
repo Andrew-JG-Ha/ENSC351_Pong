@@ -12,8 +12,8 @@
 #define EMPTY 0
 #define PADDLE_BALL 1
 
-gameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw) {
-    gameServer* newGame = (gameServer*)malloc(sizeof(gameServer));
+GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw) {
+    GameServer* newGame = (GameServer*)malloc(sizeof(GameServer));
     memset(newGame -> board, 0, sizeof(newGame->board));
     newGame->scoreLeft = 0;
     newGame->scoreRight = 0;
@@ -22,15 +22,17 @@ gameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     newGame->player1 = player1;
     newGame->player2 = player2; 
     newGame->lcdScreen = generateLcd(hw.ledScreen);
-    newGame->matrixHardware = (hw.matrix);
+    newGame->matrixHardware = hw.matrix;
 }
 
-void destroyGameServer(gameServer* gameServer) {
+void destroyGameServer(GameServer* gameServer) {
+    destroyLcd(gameServer->lcdScreen);
+    gameServer->lcdScreen = NULL;
     free(gameServer);
 }
 
 void runServer() {
-    gameServer* game;
+    GameServer* game;
     initializeGame(game);
 
     /*while (1) {
@@ -40,7 +42,7 @@ void runServer() {
 }
 
 // initialize game, paddles/ball represented by 1
-void initializeGame(gameServer *game) {
+void initializeGame(GameServer *game) {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             game->board[i][j] = EMPTY;
@@ -60,7 +62,7 @@ void initializeGame(gameServer *game) {
     game->directionY = 1;
 }
 
-void updateGame(gameServer *game) {
+void updateGame(GameServer *game) {
     int placeholder = 0;
     // player 1 (right) paddles, placeholder for inputs later
     // up

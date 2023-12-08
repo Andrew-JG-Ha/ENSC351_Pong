@@ -30,14 +30,13 @@ int main() {
     GameServer* gameServer;
     player1 = generatePlayer(inHW_player1);
     player2 = generatePlayer(inHW_player2);
-    gameServer = generateGameServer();
+    gameServer = generateGameServer(player1, player2, outHW);
 
     // Start threads
     runPlayerClient(player1);
     runPlayerClient(player2);    
 
-
-    waitForEdge();
+    // waitForEdge();
 
     // Cleanup
     cleanup(player1, player2, gameServer);
@@ -68,6 +67,11 @@ void initGameServerHW(OutputHardware* outputHardware) {
     outputHardware->ledScreen.rsPin.gpioPin = "gpio11";
     outputHardware->ledScreen.rsPin.pinNumber = "11";
 
+    outputHardware->matrix.Matrix1 = 0x70;
+    outputHardware->matrix.Matrix2 = 0x72;
+    outputHardware->matrix.Matrix3 = 0x71;
+    outputHardware->matrix.Matrix4 = 0x73;
+    
 }
 
 void initPlayer1HW(InputHardware* inputHardware) {

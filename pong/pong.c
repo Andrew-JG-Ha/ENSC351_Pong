@@ -75,53 +75,53 @@ void initGameServerHW(OutputHardware* outputHardware) {
 }
 
 void initPlayer1HW(InputHardware* inputHardware) {
-    inputHardware->buttonLed.pin = "p8.13";
-    inputHardware->buttonLed.gpioPin = "gpio23";
-    inputHardware->buttonLed.pinNumber = "23";
+    inputHardware->buttonLed.pin = "p8.40";
+    inputHardware->buttonLed.gpioPin = "gpio77";
+    inputHardware->buttonLed.pinNumber = "77";
 
-    inputHardware->joyStickLed.pin = "p8.46";
-    inputHardware->joyStickLed.gpioPin = "gpio71";
-    inputHardware->joyStickLed.pinNumber = "71";
+    inputHardware->joyStickLed.pin = "p8.39";
+    inputHardware->joyStickLed.gpioPin = "gpio76";
+    inputHardware->joyStickLed.pinNumber = "76";
 
-    inputHardware->upButton.pin = "p8.7";
-    inputHardware->upButton.gpioPin = "gpio66";
-    inputHardware->upButton.pinNumber = "66";
+    inputHardware->upButton.pin = "p8.33";
+    inputHardware->upButton.gpioPin = "gpio9";
+    inputHardware->upButton.pinNumber = "9";
 
-    inputHardware->downButton.pin = "p8.9";
-    inputHardware->downButton.gpioPin = "gpio69";
-    inputHardware->downButton.pinNumber = "69";
+    inputHardware->downButton.pin = "p8.34";
+    inputHardware->downButton.gpioPin = "gpio81";
+    inputHardware->downButton.pinNumber = "81";
 
-    inputHardware->profileSwitchButton.pin = "p8.8";
-    inputHardware->profileSwitchButton.gpioPin = "gpio67";
-    inputHardware->profileSwitchButton.pinNumber = "67";
+    inputHardware->profileSwitchButton.pin = "p8.36";
+    inputHardware->profileSwitchButton.gpioPin = "gpio80";
+    inputHardware->profileSwitchButton.pinNumber = "80";
 
     inputHardware->joystick.xpin = "in_voltage2_raw";
     inputHardware->joystick.ypin = "in_voltage3_raw";
 }
 
 void initPlayer2HW(InputHardware* inputHardware) {
-    inputHardware->buttonLed.pin = "p8.13";
-    inputHardware->buttonLed.gpioPin = "gpio23";
-    inputHardware->buttonLed.pinNumber = "23";
+    inputHardware->buttonLed.pin = "p8.8";
+    inputHardware->buttonLed.gpioPin = "gpio67";
+    inputHardware->buttonLed.pinNumber = "67";
 
-    inputHardware->joyStickLed.pin = "p8.46";
-    inputHardware->joyStickLed.gpioPin = "gpio71";
-    inputHardware->joyStickLed.pinNumber = "71";
+    inputHardware->joyStickLed.pin = "p8.7";
+    inputHardware->joyStickLed.gpioPin = "gpio66";
+    inputHardware->joyStickLed.pinNumber = "66";
 
-    inputHardware->upButton.pin = "p8.7";
-    inputHardware->upButton.gpioPin = "gpio66";
-    inputHardware->upButton.pinNumber = "66";
+    inputHardware->upButton.pin = "p8.12";
+    inputHardware->upButton.gpioPin = "gpio44";
+    inputHardware->upButton.pinNumber = "44";
 
-    inputHardware->downButton.pin = "p8.9";
-    inputHardware->downButton.gpioPin = "gpio69";
-    inputHardware->downButton.pinNumber = "69";
+    inputHardware->downButton.pin = "p8.13";
+    inputHardware->downButton.gpioPin = "gpio23";
+    inputHardware->downButton.pinNumber = "23";
 
-    inputHardware->profileSwitchButton.pin = "p8.8";
-    inputHardware->profileSwitchButton.gpioPin = "gpio67";
-    inputHardware->profileSwitchButton.pinNumber = "67";
+    inputHardware->profileSwitchButton.pin = "p8.11";
+    inputHardware->profileSwitchButton.gpioPin = "gpio45";
+    inputHardware->profileSwitchButton.pinNumber = "45";
 
-    inputHardware->joystick.xpin = "in_voltage2_raw";
-    inputHardware->joystick.ypin = "in_voltage3_raw";
+    inputHardware->joystick.xpin = "in_voltage4_raw";
+    inputHardware->joystick.ypin = "in_voltage5_raw";
 }
 
 void initBoardHW() {
@@ -144,5 +144,7 @@ void initBoardHW() {
 }
 
 void cleanup(Player* player1, Player* player2, GameServer* server) {
-
+    destroyGameServer(server);
+    destroyPlayer(player1);
+    destroyPlayer(player2);
 }

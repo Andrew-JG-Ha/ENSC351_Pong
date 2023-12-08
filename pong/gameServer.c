@@ -152,7 +152,7 @@ void updateGame(GameServer *game) {
                 if (newI >= BOARD_SIZE) {
                     newI = i - 1;
                     game->ballY = -1;
-                } else if (newI == 0) {
+                } else if (i == 0) {
                     newI = i + 1;
                     game->ballY = 1;
                 }

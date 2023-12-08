@@ -22,8 +22,6 @@ static void* playerThread(void* playerObj) { // threaded
     int down = 0;
     int playerDir = 0;
     bool buttonPressed = false;
-    //turnLedOff(player->buttonLed);
-    //turnLedOn(player->joyStickLed);
     while(true) {
         if (readButton(player->profileSwitchButton) == 1 && buttonPressed == false) {
             buttonPressed = true;

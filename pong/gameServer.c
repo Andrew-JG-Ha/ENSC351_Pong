@@ -151,37 +151,38 @@ void updateGame(GameServer *game) {
                 // bounce off wall (top/bottom)
                 if (newI >= BOARD_SIZE) {
                     newI = i - 1;
-                    game->ballX = -1;
-                } else if (newI == 0) {
+                    game->ballY = -1;
+                } else if (i == 0) {
                     newI = i + 1;
-                    game->ballX = 1;
+                    game->ballY = 1;
                 }
 
                 // right paddle collision
-                if (newI == BOARD_SIZE - 1 && game->board[newI][newJ] == PADDLE_BALL) {
+                if (newJ == BOARD_SIZE - 1 && game->board[newI][newJ] == PADDLE_BALL) {
                     newJ = j - 1;
-                    game->ballY = -1;
+                    game->ballX = -1;
                 }
 
                 // left paddle collision
-                if (newI == 0 && game->board[newI][newJ] == PADDLE_BALL) {
+                if (newJ == 0 && game->board[newI][newJ] == PADDLE_BALL) {
                     newJ = j + 1;  
-                    game->ballY = 1;
+                    game->ballX = 1;
                 }
 
                 game->board[newI][newJ] = PADDLE_BALL;
 
                 if (j == 0 || j == BOARD_SIZE - 1) {
+                    // SCORE =============================================================
                     if (j == 0) {
-                        game->scoreLeft++;
-                    } else if (j == BOARD_SIZE - 1) {
                         game->scoreRight++;
+                    } else if (j == BOARD_SIZE - 1) {
+                        game->scoreLeft++;
                     }
 
                     if (game->scoreLeft == 3) {
-                        
+                        // left win =================================
                     } else if (game->scoreRight == 3) {
-                        // right win
+                        // right win ==================================
                     } else {
                         // restart
                         game->board[i][j] == EMPTY;
@@ -190,14 +191,9 @@ void updateGame(GameServer *game) {
                         int ballY = (int)ceil((double)BOARD_SIZE/2);
                         game->board[ballX][ballY] = PADDLE_BALL;
 
-                        int randomNumber = rand() % 2 + 1;
+                        game->ballX = 1;
 
-                        if (randomNumber == 0) {
-                            game->ballX = 1;
-                        } else {
-                            game->ballY = 1;
-                        }
-
+                        game->ballY = 1;
                     }
                 }    
         }

@@ -29,7 +29,7 @@ typedef struct GameServer {
     Player* player1;
     Player* player2;
     LcdScreen* lcdScreen;
-    MatrixHardware matrixHardware;  
+    Matrix* matrix;
     GameEncodings* gameEncodings;
 } GameServer;
 

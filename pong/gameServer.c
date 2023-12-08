@@ -22,7 +22,7 @@ GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     newGame->ballY = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
-    newGame->matrixHardware = hw.matrix;
+    newGame->matrix = initMatrix(I2C_BUS_1, hw.matrix);
     newGame->lcdScreen = generateLcd(hw.lcdScreen);
     newGame->gameEncodings = generateGameEncodings();
     return newGame;
@@ -47,14 +47,10 @@ void runGameServer(GameServer* gameServer) {
 static void* serverThread(void* serverObj) {
     GameServer* gameServer = (GameServer*) serverObj;
     initializeGame(gameServer);
-    int fileDesc1; 
-    // int fileDesc2 = 
-    // int fileDesc3 = 
-    // int fileDesc4 = 
 
     while (true) {
         parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
-        writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
+        writeData(BOARD_SIZE, gameServer->matrix, gameServer->gameEncodings);
     }
     return NULL;
 } 
@@ -91,7 +87,7 @@ static void initializeGame(GameServer *game) {
 }
 
 void updateGame(GameServer *game) {
-    // player 1 (right) paddles, placeholder for inputs later
+        // player 1 (right) paddles, placeholder for inputs later
     // up
     if (game->player1->currPlayerDir == 1) {
         // move up
@@ -197,4 +193,58 @@ void updateGame(GameServer *game) {
             }
         }
     }
+}
+
+int main() {
+    MatrixHardware m;
+    m.deviceAddress[0] = 0x70;
+    m.deviceAddress[1] = 0x71;
+    m.deviceAddress[2] = 0x72;
+    m.deviceAddress[3] = 0x73;
+    Matrix* mat = initMatrix(I2C_BUS_1, m);
+    int board[16][16];
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            board[i][j] = 0;
+        }
+    }
+    board[0][0] = 1;
+    board[0][1] = 1;
+    board[1][1] = 1;
+    board[8][0] = 1;
+    board[8][1] = 1;
+    board[9][1] = 1;
+    board[8][8] = 1;
+    board[8][9] = 1;
+    board[9][9] = 1;
+    board[0][8] = 1;
+    board[0][9] = 1;
+    board[1][9] = 1;
+
+    printf("initial setup: \n");
+    for (int i = 0; i< 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            printf("%d", board[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    GameEncodings* test = generateGameEncodings();
+    parseGameState(test, 16, board);
+    GameEncodings* test2 = malloc(sizeof(GameEncodings));
+    unsigned char tests [64];
+    for (int i = 0; i < 64; i++) {
+        tests[i] = 0x00;
+    }
+    tests[0] = 0x01;
+    test2->playerHalf1 = tests;
+    test2->playerHalf2 = tests;
+
+    printf("post parsing: \n");
+    for (int i = 0; i < 16; i++) {
+        printf("row: %d, PH1: %d, PH2: %d\n", i, test->playerHalf1[i], test->playerHalf2[i]);
+    }
+
+    writeData(16, mat, test);
+    free(test2);
 }

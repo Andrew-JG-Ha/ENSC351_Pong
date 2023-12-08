@@ -24,6 +24,10 @@ int initBus(char* bus, int address);
 
 void writeI2CReg(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress);
 
+void writeI2CRegReverse(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress);
+
+void writeI2CRegInvert(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress);
+
 unsigned char readRegI2C(int i2cFileDesc, unsigned char regAddr);
 
 #endif

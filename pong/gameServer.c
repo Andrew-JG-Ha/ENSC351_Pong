@@ -17,8 +17,8 @@ GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     memset(newGame -> board, 0, sizeof(newGame->board));
     newGame->scoreLeft = 0;
     newGame->scoreRight = 0;
-    newGame->directionX = 0;
-    newGame->directionY = 0;
+    newGame->ballX = 0;
+    newGame->ballY = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
     newGame->lcdScreen = generateLcd(hw.ledScreen);
@@ -29,6 +29,7 @@ void destroyGameServer(GameServer* gameServer) {
     destroyLcd(gameServer->lcdScreen);
     gameServer->lcdScreen = NULL;
     free(gameServer);
+    gameServer = NULL;
 }
 
 void runServer() {
@@ -58,8 +59,8 @@ void initializeGame(GameServer *game) {
     int ballY = (int)ceil((double)BOARD_SIZE/2);
     game->board[ballX][ballY] = PADDLE_BALL;
 
-    game->directionX = 1;
-    game->directionY = 1;
+    game->ballX = 1;
+    game->ballY = 1;
 }
 
 void updateGame(GameServer *game) {
@@ -116,48 +117,28 @@ void updateGame(GameServer *game) {
             if (game->board[i][j] == PADDLE_BALL) {
                 game->board[i][j] = EMPTY;
 
-                int newI = i + game->directionY;
-                int newJ = j + game->directionX;
+                int newI = i + game->ballY;
+                int newJ = j + game->ballX;
 
                 // bounce off wall (top/bottom)
                 if (newI >= BOARD_SIZE) {
                     newI = i - 1;
-                    game->directionY = -1;
+                    game->ballX = -1;
                 } else if (newI == 0) {
                     newI = i + 1;
-                    game->directionY = 1;
+                    game->ballX = 1;
                 }
 
                 // right paddle collision
                 if (newI == BOARD_SIZE - 1 && game->board[newI][newJ] == PADDLE_BALL) {
                     newJ = j - 1;
-                    game->directionX = -1;
-
-                    srand(time(NULL));
-                    int randomNumber = rand() % 2 + 1;
-
-                    if (randomNumber == 0 && newI != BOARD_SIZE - 1) {
-                        newI -= 1;
-                        game->directionY = -1;
-                    } else if (randomNumber == 1 && BOARD_SIZE != 0)
-                        newI += 1;
-                        game->directionY = 1;
-                    }
+                    game->ballY = -1;
+                }
 
                 // left paddle collision
                 if (newI == 0 && game->board[newI][newJ] == PADDLE_BALL) {
                     newJ = j + 1;  
-
-                    srand(time(NULL));
-                    int randomNumber = rand() % 2 + 1;
-
-                    if (randomNumber == 0 && newI > 0) {
-                        newI -= 1;
-                        game->directionY = -1;
-                    } else if (randomNumber == 1 && newI != BOARD_SIZE - 1) {
-                        newI += 1;
-                        game->directionY = 1;
-                    }
+                    game->ballY = 1;
                 }
 
                 game->board[newI][newJ] = PADDLE_BALL;
@@ -184,9 +165,9 @@ void updateGame(GameServer *game) {
                         int randomNumber = rand() % 2 + 1;
 
                         if (randomNumber == 0) {
-                            game->directionX = 1;
+                            game->ballX = 1;
                         } else {
-                            game->directionY = 1;
+                            game->ballY = 1;
                         }
 
                     }

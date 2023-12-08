@@ -4,8 +4,6 @@
 #define USER_BUTTON "/sys/class/gpio/gpio72/"
 #define MAX_LENGTH 1024
 
-#define matrixAddress1 
-
 GameServer* createGameServer(Player* player1, Player* player2);
 void initPlayer2HW(InputHardware* inputHardware);
 void initPlayer1HW(InputHardware* inputHardware);
@@ -43,29 +41,29 @@ int main() {
 }
 
 void initGameServerHW(OutputHardware* outputHardware) {
-    outputHardware->ledScreen.dataPins[0].pin = "p8.27";
-    outputHardware->ledScreen.dataPins[0].gpioPin = "gpio86";
-    outputHardware->ledScreen.dataPins[0].pinNumber = "86";
+    outputHardware->lcdScreen.dataPins[0].pin = "p8.27";
+    outputHardware->lcdScreen.dataPins[0].gpioPin = "gpio86";
+    outputHardware->lcdScreen.dataPins[0].pinNumber = "86";
 
-    outputHardware->ledScreen.dataPins[1].pin = "p8.28";
-    outputHardware->ledScreen.dataPins[1].gpioPin = "gpio88";
-    outputHardware->ledScreen.dataPins[1].pinNumber = "88";
+    outputHardware->lcdScreen.dataPins[1].pin = "p8.28";
+    outputHardware->lcdScreen.dataPins[1].gpioPin = "gpio88";
+    outputHardware->lcdScreen.dataPins[1].pinNumber = "88";
 
-    outputHardware->ledScreen.dataPins[2].pin = "p8.29";
-    outputHardware->ledScreen.dataPins[2].gpioPin = "gpio87";
-    outputHardware->ledScreen.dataPins[2].pinNumber = "87";
+    outputHardware->lcdScreen.dataPins[2].pin = "p8.29";
+    outputHardware->lcdScreen.dataPins[2].gpioPin = "gpio87";
+    outputHardware->lcdScreen.dataPins[2].pinNumber = "87";
 
-    outputHardware->ledScreen.dataPins[3].pin = "p8.30";
-    outputHardware->ledScreen.dataPins[3].gpioPin = "gpio89";
-    outputHardware->ledScreen.dataPins[3].pinNumber = "89";
+    outputHardware->lcdScreen.dataPins[3].pin = "p8.30";
+    outputHardware->lcdScreen.dataPins[3].gpioPin = "gpio89";
+    outputHardware->lcdScreen.dataPins[3].pinNumber = "89";
 
-    outputHardware->ledScreen.ePin.pin = "p8.31";
-    outputHardware->ledScreen.ePin.gpioPin = "gpio10";
-    outputHardware->ledScreen.ePin.pinNumber = "10";
+    outputHardware->lcdScreen.ePin.pin = "p8.31";
+    outputHardware->lcdScreen.ePin.gpioPin = "gpio10";
+    outputHardware->lcdScreen.ePin.pinNumber = "10";
 
-    outputHardware->ledScreen.rsPin.pin = "p8.32";
-    outputHardware->ledScreen.rsPin.gpioPin = "gpio11";
-    outputHardware->ledScreen.rsPin.pinNumber = "11";
+    outputHardware->lcdScreen.rsPin.pin = "p8.32";
+    outputHardware->lcdScreen.rsPin.gpioPin = "gpio11";
+    outputHardware->lcdScreen.rsPin.pinNumber = "11";
 
     outputHardware->matrix.Matrix1 = 0x70;
     outputHardware->matrix.Matrix2 = 0x72;

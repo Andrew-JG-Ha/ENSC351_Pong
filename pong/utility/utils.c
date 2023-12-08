@@ -128,6 +128,17 @@ void sleepForMs(long long delayInMs) {
 }
 
 /**
+ * Sleeps the program for (delayInNs)ns amount of time 
+*/
+void sleepForNs(long long delayInNs) {
+    const long long NS_PER_SEC = 1000000000;
+    int seconds = delayInNs / NS_PER_SEC;
+    int nanoseconds = delayInNs % NS_PER_SEC;
+    struct timespec reqDelay = {seconds, nanoseconds};
+    nanosleep(&reqDelay, (struct timespec*) NULL);
+}
+
+/**
  * Provides the current clock time in ms
 */
 long long getTimeInMilliS(void) {

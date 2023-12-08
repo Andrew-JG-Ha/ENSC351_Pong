@@ -32,6 +32,8 @@ int runCommand(char* command);
 
 void sleepForMs(long long delayInMs);
 
+void sleepForNs(long long delayInNs);
+
 long long getTimeInMilliS(void);
 
 long long getTimeInMicroS(void);

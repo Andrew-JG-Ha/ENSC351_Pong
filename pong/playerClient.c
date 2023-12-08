@@ -2,14 +2,14 @@
 #include <pthread.h>
 #include "utility/utils.h"
 
-Player* generatePlayer(HardwareParams hardwareParams) {
+Player* generatePlayer(InputHardware inputHardware) {
     Player* newPlayer = malloc(sizeof(Player));
-    newPlayer->buttonLed = generateLed(hardwareParams.buttonLed);
-    newPlayer->joyStickLed = generateLed(hardwareParams.joyStickLed);
-    newPlayer->upButton = generateButton(hardwareParams.upButton, false);
-    newPlayer->downButton = generateButton(hardwareParams.downButton, false);
-    newPlayer->profileSwitchButton = generateButton(hardwareParams.profileSwitchButton, false);
-    newPlayer->joystick = Joystick_new(hardwareParams.joystick.xpin, hardwareParams.joystick.ypin);
+    newPlayer->buttonLed = generateLed(inputHardware.buttonLed);
+    newPlayer->joyStickLed = generateLed(inputHardware.joyStickLed);
+    newPlayer->upButton = generateButton(inputHardware.upButton, false);
+    newPlayer->downButton = generateButton(inputHardware.downButton, false);
+    newPlayer->profileSwitchButton = generateButton(inputHardware.profileSwitchButton, false);
+    newPlayer->joystick = Joystick_new(inputHardware.joystick.xpin, inputHardware.joystick.ypin);
     newPlayer->currPlayerDir = 0;
     pthread_mutex_init(&newPlayer->mId, NULL);
     return newPlayer;
@@ -95,58 +95,3 @@ void stopPlayerClient(Player* player) {
         exit(1);
     }
 }
-
-int main() {
-    struct HardwareParams h;
-    h.buttonLed.pin = "p8.13";
-    h.buttonLed.gpioPin = "gpio23";
-    h.buttonLed.pinNumber = "23";
-
-    h.joyStickLed.pin = "p8.46";
-    h.joyStickLed.gpioPin = "gpio71";
-    h.joyStickLed.pinNumber = "71";
-
-    h.upButton.pin = "p8.7";
-    h.upButton.gpioPin = "gpio66";
-    h.upButton.pinNumber = "66";
-
-    h.downButton.pin = "p8.9";
-    h.downButton.gpioPin = "gpio69";
-    h.downButton.pinNumber = "69";
-
-    h.profileSwitchButton.pin = "p8.8";
-    h.profileSwitchButton.gpioPin = "gpio67";
-    h.profileSwitchButton.pinNumber = "67";
-
-    h.joystick.xpin = "in_voltage2_raw";
-    h.joystick.ypin = "in_voltage3_raw";
-
-    Player* play = generatePlayer(h);
-    /**
-    if (pthread_create(&play->tId, NULL, playerThread, play)) {
-        perror("ERROR");
-    }
-    pthread_detach(play->tId);
-    **/
-    runPlayerClient(play);
-    //configureGPIO(h.profileSwitchButton.pinNumber, "rising");
-    //runButtonThread(play->profileSwitchButton);
-
-    int currTime = 0;
-    int startTime = getTimeInMilliS();
-
-    while(true) {
-        sleepForMs(100);
-        pthread_mutex_lock(&play->mId);
-        //printf("Current Value: %d\n", play->currPlayerDir);
-        pthread_mutex_unlock(&play->mId);
-        currTime = getTimeInMilliS();
-        if (currTime - startTime > 100000){
-            break;
-        }
-    }
-    stopPlayerClient(play);
-    destroyPlayer(play);
-}
-
-

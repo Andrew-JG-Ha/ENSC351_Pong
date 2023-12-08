@@ -9,14 +9,14 @@
 /**
  * Player client would use joystick or button packages to obtain current "action" from hardware
 */
-typedef struct HardwareParams {
+typedef struct InputHardware {
     LedHardware joyStickLed;
     LedHardware buttonLed;
     ButtonHardware profileSwitchButton;
     ButtonHardware upButton;
     ButtonHardware downButton;
     JoystickHardware joystick;
-} HardwareParams;
+} InputHardware;
 
 typedef struct Player {
     pthread_t tId;
@@ -30,7 +30,7 @@ typedef struct Player {
     Joystick* joystick;
 } Player;
 
-Player* generatePlayer(HardwareParams hardwareParams);
+Player* generatePlayer(InputHardware inputHardware);
 void destroyPlayer(Player* player);
 void runPlayerClient(Player* player);
 void stopPlayerClient(Player* player);

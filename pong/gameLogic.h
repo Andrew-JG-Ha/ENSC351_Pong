@@ -3,8 +3,8 @@
 
 #include "gameServer.h"
 
-void initializeGame(gameServer* game);
+void initializeGame(GameServer* game);
 
-void updateGame(gameServer* game);
+void updateGame(GameServer* game);
 
 #endif

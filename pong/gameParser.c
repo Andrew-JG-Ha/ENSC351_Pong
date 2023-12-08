@@ -18,13 +18,12 @@ GameEncodings* generateGameEncodings() {
 }
 
 void destroyGameEncodings(GameEncodings* gameEncodings) {
-    // for (int i = 0; i < MAX_ENCODING; i++) {
-    //     gameEncodings->playerHalf1[i] = NULL;
-    //     gameEncodings->playerHalf2[i] = NULL;
-    // }
     free(gameEncodings->playerHalf1);
     free(gameEncodings->playerHalf2);
+    gameEncodings->playerHalf1 = NULL;
+    gameEncodings->playerHalf2 = NULL;
     free(gameEncodings);
+    gameEncodings = NULL;
 }
 
 void parseGameState(GameEncodings* gameEncodings, int boardSize, int board[][boardSize]) {

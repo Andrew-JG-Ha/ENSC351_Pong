@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 #include "hardware/lcd.h"
-//#include "gameWrite.h"
+#include "gameWrite.h"
 #include "playerClient.h"
 #include "gameParser.h"
 
@@ -18,7 +18,7 @@
 
 typedef struct OutputHardware {
     LcdHardware lcdScreen;
-    //MatrixHardware matrix;
+    MatrixHardware matrix;
 } OutputHardware;
 
 typedef struct GameServer {
@@ -31,7 +31,7 @@ typedef struct GameServer {
     Player* player1;
     Player* player2;
     LcdScreen* lcdScreen;
-    //MatrixHardware matrixHardware;  
+    MatrixHardware matrixHardware;  
     GameEncodings* gameEncodings;
 } GameServer;
 

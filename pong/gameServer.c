@@ -22,16 +22,16 @@ GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware 
     newGame->ballY = 0;
     newGame->player1 = player1;
     newGame->player2 = player2; 
-    //newGame->matrixHardware = hw.matrix;
-    //newGame->lcdScreen = generateLcd(hw.lcdScreen);
-    //newGame->gameEncodings = generateGameEncodings();
+    newGame->matrixHardware = hw.matrix;
+    newGame->lcdScreen = generateLcd(hw.lcdScreen);
+    newGame->gameEncodings = generateGameEncodings();
     return newGame;
 }
 
 void destroyGameServer(GameServer* gameServer) {
     destroyLcd(gameServer->lcdScreen);
     gameServer->lcdScreen = NULL;
-    //destroyGameEncodings(gameServer->gameEncodings);
+    destroyGameEncodings(gameServer->gameEncodings);
     gameServer->gameEncodings = NULL;
     free(gameServer);
     gameServer = NULL;
@@ -47,19 +47,14 @@ void runGameServer(GameServer* gameServer) {
 static void* serverThread(void* serverObj) {
     GameServer* gameServer = (GameServer*) serverObj;
     initializeGame(gameServer);
-    //int fileDesc1; 
-    char buff[1024];
+    int fileDesc1; 
     // int fileDesc2 = 
     // int fileDesc3 = 
     // int fileDesc4 = 
-    //writeMessageToLcd(gameServer->lcdScreen, "Hello World");
-    printf("server started");
+
     while (true) {
-        sprintf(buff, "P1:%d  P2:%d", gameServer->player1->currPlayerDir, gameServer->player2->currPlayerDir);
-        printf("%s", buff);
-        writeMessageToLcd(gameServer->lcdScreen,buff);
-        //parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
-        //writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
+        parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
+        writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
     }
     return NULL;
 } 

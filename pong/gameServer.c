@@ -29,6 +29,7 @@ void destroyGameServer(GameServer* gameServer) {
     destroyLcd(gameServer->lcdScreen);
     gameServer->lcdScreen = NULL;
     free(gameServer);
+    gameServer = NULL;
 }
 
 void runServer() {

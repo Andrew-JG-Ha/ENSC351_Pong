@@ -11,22 +11,23 @@
  * Game server would read the playerClient desired move ie up/down/nothing and update game state
  * and update the display
 */
-typedef struct outputHardware {
+typedef struct OutputHardware {
     LcdHardware ledScreen;
     MatrixHardware matrix;
-} outputHardware;
+} OutputHardware;
 
 
-typedef struct gameServer {
+typedef struct GameServer {
     pthread_t pId;
     int board[BOARD_SIZE][BOARD_SIZE];
     int scoreLeft;
     int scoreRight;
     int directionX;
     int directionY;
-} gameServer;
 
-gameServer* generateGameServer();
-void destroyGameServer(gameServer* gameServer);
+} GameServer;
+
+GameServer* generateGameServer();
+void destroyGameServer(GameServer* gameServer);
 
 #endif

@@ -7,7 +7,7 @@
 #define PADDLE_BALL 1
 
 // initialize game, paddles/ball represented by 1
-void initializeGame(gameServer *game) {
+void initializeGame(GameServer *game) {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             game->board[i][j] = EMPTY;
@@ -30,7 +30,7 @@ void initializeGame(gameServer *game) {
     game->scoreRight = 0;
 }
 
-void updateGame(gameServer *game) {
+void updateGame(GameServer *game) {
     int placeholder = 0;
     // player 1 (right) paddles, placeholder for inputs later
     // up

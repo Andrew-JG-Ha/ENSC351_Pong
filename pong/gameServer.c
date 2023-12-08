@@ -10,6 +10,9 @@
 #define EMPTY 0
 #define PADDLE_BALL 1
 
+static void* serverThread(void* serverObj);
+static void initializeGame(GameServer *game);
+
 GameServer* generateGameServer(Player* player1, Player* player2, OutputHardware hw) {
     GameServer* newGame = (GameServer*)malloc(sizeof(GameServer));
     memset(newGame -> board, 0, sizeof(newGame->board));
@@ -34,7 +37,7 @@ void destroyGameServer(GameServer* gameServer) {
     gameServer = NULL;
 }
 
-void runServer(GameServer* gameServer) {
+void runGameServer(GameServer* gameServer) {
     if (pthread_create(&gameServer->tId, NULL, serverThread, gameServer)) {
         perror("ERROR: couldn't initialize server thread");
     }
@@ -53,21 +56,21 @@ static void* serverThread(void* serverObj) {
         parseGameState(gameServer->gameEncodings, BOARD_SIZE, gameServer->board);
         writeData(fileDesc1, BOARD_SIZE, gameServer->matrixHardware, gameServer->gameEncodings);
     }
-
+    return NULL;
 } 
 
-void stopServer(GameServer* GameServer) {
-    if (pthread_cancel(GameServer->tId)) {
+void stopGameServer(GameServer* gameServer) {
+    if (pthread_cancel(gameServer->tId)) {
         perror("ERROR: couldn't stop player thread");
     }
-    if (!pthread_join(GameServer->tId, NULL)) {
+    if (!pthread_join(gameServer->tId, NULL)) {
         perror("Server thread join failed. \n");
         exit(1);
     }
 }
 
 // initialize game, paddles/ball represented by 1
-void initializeGame(GameServer *game) {
+static void initializeGame(GameServer *game) {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             game->board[i][j] = EMPTY;
@@ -91,7 +94,7 @@ void updateGame(GameServer *game) {
     int placeholder = 0;
     // player 1 (right) paddles, placeholder for inputs later
     // up
-    if (placeholder == NULL) {
+    if (game->ballY == 1) {
         // move up
         for (int i = 1; i < BOARD_SIZE; i++) {
             if (game->board[i][0] == PADDLE_BALL) {
@@ -196,7 +199,7 @@ void updateGame(GameServer *game) {
 
                     }
                 }    
+            }
         }
     }
-
 }

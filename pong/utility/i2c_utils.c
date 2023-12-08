@@ -3,6 +3,8 @@
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include <fcntl.h> 
+#include <string.h>
+#include <unistd.h> 
 
 #define MAX_LENGTH 1024
 
@@ -43,18 +45,6 @@ int initBus(char* bus, int address) {
     return i2cFileDesc;
 }
 
-void writeToRegI2C(int i2cFileDesc, unsigned char regAddr, unsigned char* valueArr, int numberOfElements) {
-    unsigned char buff[1 + numberOfElements];
-    buff[0] = regAddr;
-    for (int i = 0; i < numberOfElements; i++) {
-        buff[i + 1] = valueArr[i];
-    }
-    int res = write(i2cFileDesc, buff, numberOfElements + 1);
-    if (res != numberOfElements + 1) {
-        perror("I2C: Unable to write i2c register.");
-        exit(-1);
-    }
-}
 
 void writeI2CReg(int i2cFileDesc, unsigned char regAddr, int bytes, unsigned char* dataAddress) {
     unsigned char buff[2 * bytes + 1];

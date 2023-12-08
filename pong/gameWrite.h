@@ -4,12 +4,18 @@
 #define BYTES_TO_WRITE 8
 
 typedef struct MatrixHardware {
-    unsigned char Matrix1;
-    unsigned char Matrix2;
-    unsigned char Matrix3;
-    unsigned char Matrix4;
+    Matrix Matrix1;
+    Matrix Matrix2;
+    Matrix Matrix3;
+    Matrix Matrix4;
 } MatrixHardware;
 
-void writeData(int i2cFileDesc, int boardSize, MatrixHardware* mat, GameEncodings* encodings);
+typedef struct Matrix {
+    unsigned char deviceAddress;
+    int i2cFileDesc;
+} Matrix;
+
+void writeData(int i2cFileDesc, int boardSize, MatrixHardware mat, GameEncodings* encodings);
+int enableMatrix(char* bus, MatrixHardware m);
 
 #endif

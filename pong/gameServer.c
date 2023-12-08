@@ -91,10 +91,9 @@ static void initializeGame(GameServer *game) {
 }
 
 void updateGame(GameServer *game) {
-    int placeholder = 0;
     // player 1 (right) paddles, placeholder for inputs later
     // up
-    if (game->ballY == 1) {
+    if (game->player1->currPlayerDir == 1) {
         // move up
         for (int i = 1; i < BOARD_SIZE; i++) {
             if (game->board[i][0] == PADDLE_BALL) {
@@ -104,7 +103,7 @@ void updateGame(GameServer *game) {
                 }
             }
         }
-    } else if (placeholder == NULL) {
+    } else if (game->player1->currPlayerDir == -1) {
         // move down
         for (int i = BOARD_SIZE - 2; i >= 0; i--) {
             if (game->board[i][0] == PADDLE_BALL) {
@@ -117,7 +116,7 @@ void updateGame(GameServer *game) {
     }
 
     // player 2 (left) paddles
-    if (placeholder == NULL) {
+    if (game->player2->currPlayerDir == 1) {
         // move up
         for (int i = 1; i < BOARD_SIZE; i++) {
             if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
@@ -127,7 +126,7 @@ void updateGame(GameServer *game) {
                 }
             }
         }
-    } else if (placeholder == NULL) {
+    } else if (game->player2->currPlayerDir == -1) {
         // move down
         for (int i = BOARD_SIZE - 2; i >= 0; i--) {
             if (game->board[i][BOARD_SIZE - 1] == PADDLE_BALL) {
@@ -184,7 +183,7 @@ void updateGame(GameServer *game) {
                         // right win ==================================
                     } else {
                         // restart
-                        game->board[i][j] == EMPTY;
+                        game->board[i][j] = EMPTY;
 
                         int ballX = (int)ceil((double)BOARD_SIZE/2);
                         int ballY = (int)ceil((double)BOARD_SIZE/2);

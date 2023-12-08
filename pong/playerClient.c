@@ -91,7 +91,7 @@ void stopPlayerClient(Player* player) {
         perror("ERROR: couldn't stop player thread");
     }
     if (!pthread_join(player->tId, NULL)) {
-        perror("Thread join failed. \n");
+        perror("Player thread join failed. \n");
         exit(1);
     }
 }

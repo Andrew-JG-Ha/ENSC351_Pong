@@ -2,6 +2,9 @@
 #include <sys/ioctl.h>
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
+#include <fcntl.h> 
+
+#define MAX_LENGTH 1024
 
 int configPins(char* bus) {
     char command[MAX_LENGTH];

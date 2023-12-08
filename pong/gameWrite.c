@@ -46,8 +46,8 @@ void writeData(int boardSize, Matrix* mat, GameEncodings* encodings) {
 
     writeI2CReg(mat->i2cFileDesc[0], 0x00, BYTES_TO_WRITE, &encodings->playerHalf1[0]); // 0
     writeI2CReg(mat->i2cFileDesc[1], 0x00, BYTES_TO_WRITE, &encodings->playerHalf1[8]); // 8
-    writeI2CRegReverse(mat->i2cFileDesc[2], 0x00, BYTES_TO_WRITE, &encodings->playerHalf2[7]); // 7
-    writeI2CRegReverse(mat->i2cFileDesc[3], 0x00, BYTES_TO_WRITE, &encodings->playerHalf2[15]); // 15
+    writeI2CRegReverse(mat->i2cFileDesc[2], 0x00, BYTES_TO_WRITE, &encodings->playerHalf2[8]); // 7
+    writeI2CRegReverse(mat->i2cFileDesc[3], 0x00, BYTES_TO_WRITE, &encodings->playerHalf2[16]); // 15
 }
 
 Matrix* initMatrix(char* bus, MatrixHardware m) {

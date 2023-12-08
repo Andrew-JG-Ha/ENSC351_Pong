@@ -32,7 +32,8 @@ int main() {
     gameServer = generateGameServer(player1, player2, outHW);
     // Start threads
     runPlayerClient(player1);
-    runPlayerClient(player2);  
+    runPlayerClient(player2); 
+    runGameServer(gameServer); 
     char c[1013];
     sprintf(c, "%s%s", USER_BUTTON, "value");
     waitForEdge(c, -1);
@@ -68,10 +69,10 @@ void initGameServerHW(OutputHardware* outputHardware) {
     outputHardware->lcdScreen.rsPin.gpioPin = "gpio11";
     outputHardware->lcdScreen.rsPin.pinNumber = "11";
 
-    // outputHardware->matrix.Matrix1 = 0x70;
-    // outputHardware->matrix.Matrix2 = 0x72;
-    // outputHardware->matrix.Matrix3 = 0x71;
-    // outputHardware->matrix.Matrix4 = 0x73;
+    outputHardware->matrix.deviceAddress[0] = 0x70;
+    outputHardware->matrix.deviceAddress[2] = 0x72;
+    outputHardware->matrix.deviceAddress[1] = 0x71;
+    outputHardware->matrix.deviceAddress[3] = 0x73;
     
 }
 

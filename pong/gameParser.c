@@ -25,15 +25,6 @@ void destroyGameEncodings(GameEncodings* gameEncodings) {
     gameEncodings = NULL;
 }
 
-static void rotateColumnsVertically(int rotateAmount, unsigned char input[16][8], unsigned char* output[16][8]) {
-    for (int col = 0; col < 8; col++) {
-        for (int row = 0; row < 8; row++) {
-            int rotatedRow = (row + rotateAmount) % 8;
-            output[row][col] = *input[rotatedRow][col];
-        }
-    }
-}
-
 void parseGameState(GameEncodings* gameEncodings, int boardSize, int board[][boardSize]) {
     // int halfBoardSize = boardSize / 2;
     //int positionInPH = 0;
@@ -48,11 +39,10 @@ void parseGameState(GameEncodings* gameEncodings, int boardSize, int board[][boa
         intArr2Binary_split(board[row], boardSize, &gameEncodings->playerHalf1[row], &gameEncodings->playerHalf2[row]);
         printf("PH1: %d PH2: %d\n", gameEncodings->playerHalf1[row], gameEncodings->playerHalf2[row]);
         rotateNBits(gameEncodings->playerHalf1[row], &gameEncodings->playerHalf1[row], 1);
-        rotateNBits(gameEncodings->playerHalf2[row], &gameEncodings->playerHalf2[row], 5);
+        rotateNBits(gameEncodings->playerHalf2[row], &gameEncodings->playerHalf2[row], 1);
         printf("PH1: %d PH2: %d\n", gameEncodings->playerHalf1[row], gameEncodings->playerHalf2[row]);
         // positionInPH = positionInPH + 1;
     }
-    rotateColumnsVertically(6, gameEncodings->playerHalf1, &gameEncodings->playerHalf2[0]);
 }
 
 
